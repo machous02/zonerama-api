@@ -15,3 +15,7 @@ class ZoneramaFolder:
 
     def get_albums(self) -> list[ZoneramaAlbum]:
         return get_public_folder_albums(self)
+
+    @property
+    def albums(self) -> list[ZoneramaAlbum]:
+        return self.get_albums()

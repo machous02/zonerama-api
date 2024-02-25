@@ -12,3 +12,7 @@ class ZoneramaGallery:
 
     def get_public_folders(self) -> list[ZoneramaFolder]:
         return get_user_public_folders(self)
+
+    @property
+    def public_folders(self) -> list[ZoneramaFolder]:
+        return self.get_public_folders()
