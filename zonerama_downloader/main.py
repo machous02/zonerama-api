@@ -1,5 +1,5 @@
-from download_album import download_album
-from parse_arguments import parse, args_t
+from zonerama_downloader.download_album import download_album
+from zonerama_downloader.parse_arguments import parse, args_t
 
 
 def run_zip(args: args_t) -> None:
