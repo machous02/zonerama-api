@@ -1,4 +1,6 @@
 from zonerama_downloader.zonerama_folder import ZoneramaFolder
+from zonerama_downloader.zonerama_api import get_user_public_folders
+
 
 class ZoneramaGallery:
     Username = str
@@ -8,5 +10,5 @@ class ZoneramaGallery:
     def __init__(self, username: Username):
         self.username = username
 
-    def get_folders(self) -> list[ZoneramaFolder]:
-        pass
+    def get_public_folders(self) -> list[ZoneramaFolder]:
+        return get_user_public_folders(self)

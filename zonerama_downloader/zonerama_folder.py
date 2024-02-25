@@ -1,5 +1,6 @@
 from zonerama_downloader.zonerama_gallery import ZoneramaGallery
 from zonerama_downloader.zonerama_album import ZoneramaAlbum
+from zonerama_downloader.zonerama_api import get_public_folder_albums
 
 
 class ZoneramaFolder:
@@ -13,4 +14,4 @@ class ZoneramaFolder:
         self.id = id
 
     def get_albums(self) -> list[ZoneramaAlbum]:
-        pass
+        return get_public_folder_albums(self)
