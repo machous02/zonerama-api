@@ -148,7 +148,9 @@ def download_album(
             while the file is not ready, in seconds. Defaults to 5.0.
     """
     zip_id = _get_zip_id(album_id, secret_id, include_videos, original, av1, raw)
+
     while not _is_zip_ready(zip_id):
         print(f'Waiting on zip_id: {zip_id}, {sleep_for}s', file=sys.stderr)
         sleep(sleep_for)
+
     _download_zip(zip_id, destination_folder, sleep_for)
