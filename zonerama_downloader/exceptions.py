@@ -16,3 +16,15 @@ class UnknownResponseException(ZipDownloaderException):
 
 class SecretIdNotSpecifiedException(ZipDownloaderException):
     pass
+
+
+class ZoneramaApiException(ZoneramaDownloaderException):
+    pass
+
+
+class InvalidZoneramaFolderIdException(ZoneramaApiException):
+    id: str
+
+
+class InvalidZoneramaUsernameException(ZoneramaApiException):
+    username: str
