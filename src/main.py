@@ -1,9 +1,22 @@
-from download_album import downloadAlbum
+from download_album import download_album
+from parse_arguments import parse, args_t
+
+
+def run_zip(args: args_t) -> None:
+    download_album(
+        album_id=args.aid, secret_id=args.sid, include_videos=args.v, sleep_for=args.s
+    )
 
 
 def main():
-    pass
+    args = parse()
+
+    match args.download_type:
+        case "zip":
+            run_zip(args)
+        case _:
+            assert False
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
