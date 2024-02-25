@@ -154,6 +154,3 @@ def download_album(
     """
     zip_id = _get_zip_id(album_id, secret_id, include_videos, original, av1, raw)
     _download_zip(zip_id, destination_folder, sleep_for)
-
-
-download_album('11004064')
