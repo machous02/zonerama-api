@@ -10,6 +10,8 @@ from zonerama_downloader.zonerama_api import get_user_folder_public_albums
 
 
 class ZoneramaFolder:
+    """A class representing a folder (a tab) in a user's Zonerama Web Gallery.
+    """
     FolderId = str
 
     gallery: ZoneramaGallery
@@ -20,6 +22,11 @@ class ZoneramaFolder:
         self.id = id
 
     def get_albums(self) -> list[ZoneramaAlbum]:
+        """Returns a list of albums in the folder.
+
+        Returns:
+            list[ZoneramaAlbum]: A list of album objects representing albums in the folder.
+        """
         return [
             ZoneramaAlbum(id, self, None)
             for id in get_user_folder_public_albums(self.gallery.username, self.id)
@@ -27,4 +34,6 @@ class ZoneramaFolder:
 
     @property
     def albums(self) -> list[ZoneramaAlbum]:
+        """A list of albums in the folder.
+        """
         return self.get_albums()

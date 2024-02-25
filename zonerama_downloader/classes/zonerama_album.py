@@ -9,6 +9,8 @@ from zonerama_downloader.download_album import download_album
 
 
 class ZoneramaAlbum:
+    """A class representing an album in the Zonerama Web Gallery.
+    """
     AlbumId = str
     SecretId = str
 
@@ -35,6 +37,19 @@ class ZoneramaAlbum:
         raw: bool = False,
         sleep_for: float = 5.0,
     ) -> None:
+        """Downloads the album as a ZIP file. \
+            If the author has prohibited downloads, downloads an empty archive.
+
+        Args:
+            destination_folder (str): The destination folder for the ZIP file.
+            include_videos (bool, optional): Whether videos are included \
+                or just their thumbnails. Defaults to True.
+            original (bool, optional): Unknown. Defaults to False.
+            av1 (bool, optional): Unknown. Defaults to False.
+            raw (bool, optional): Unknown. Defaults to False.
+            sleep_for (float, optional): The time for which the function sleeps \
+                while the file is not ready, in seconds. Defaults to 5.0.
+        """
         download_album(
             self.id,
             self.secret_id,
