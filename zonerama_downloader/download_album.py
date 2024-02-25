@@ -13,6 +13,7 @@ from zonerama_downloader.exceptions import (
 
 ZIP_REQUEST_URL = "https://zonerama.com/Zip/Album"
 ZIP_READY_URL = "https://zonerama.com/Zip/IsReady"
+ZIP_SIZE_URL = "https://zonerama.com/Download/Size"
 ZIP_DOWNLOAD_URL = "https://zonerama.com/Zip/Download"
 
 
@@ -114,6 +115,26 @@ def _download_zip(zip_id: str, destination_folder: str, sleep_for: float = 5.0) 
 
     with open(os.path.join(destination_folder, filename), "wb") as df:
         df.write(response.content)
+
+
+def download_size(album_id: str, videos: bool, secret_id: str | None = None) -> str:
+    response = requests.post(
+        ZIP_SIZE_URL,
+        data={
+            "albumId": album_id,
+            "photoId": "",
+            "filter": "",
+            "secret": secret_id,
+            "download_Album": False,
+            "download_Videos": videos,
+            "download_RAWs": False,
+        },
+    )
+
+    if response.headers['content-type'] != 'application/json; charset=utf-8':
+        raise SecretIdNotSpecifiedException()
+
+    return response.json()['text']
 
 
 def download_album(
