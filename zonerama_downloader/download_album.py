@@ -9,8 +9,6 @@ from zonerama_downloader.exceptions import (
     SecretIdNotSpecifiedException,
 )
 
-from zonerama_downloader.zonerama_album import ZoneramaAlbum
-
 
 ZIP_REQUEST_URL = "https://zonerama.com/Zip/Album"
 ZIP_DOWNLOAD_URL = "https://zonerama.com/Zip/Download"
@@ -111,7 +109,7 @@ def _download_zip(zip_id: str, destination_folder: str, sleep_for: float = 5.0) 
         df.write(response.content)
 
 
-def _download_album(
+def download_album(
     album_id: str,
     secret_id: str | None = None,
     include_videos: bool = True,
@@ -144,24 +142,3 @@ def _download_album(
     """
     zip_id = _get_zip_id(album_id, secret_id, include_videos, original, av1, raw)
     _download_zip(zip_id, destination_folder, sleep_for)
-
-
-def download_album(
-    album: ZoneramaAlbum,
-    include_videos: bool = True,
-    original: bool = False,
-    av1: bool = False,
-    raw: bool = False,
-    destination_folder: str = os.getcwd(),
-    sleep_for: float = 5.0,
-) -> None:
-    _download_album(
-        album.id,
-        album.secret_id,
-        include_videos,
-        original,
-        av1,
-        raw,
-        destination_folder,
-        sleep_for,
-    )

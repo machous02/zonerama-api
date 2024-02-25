@@ -1,6 +1,12 @@
-from zonerama_downloader.zonerama_gallery import ZoneramaGallery
-from zonerama_downloader.zonerama_album import ZoneramaAlbum
-from zonerama_downloader.zonerama_api import get_public_folder_albums
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from zonerama_downloader.zonerama_gallery import ZoneramaGallery
+    from zonerama_downloader.zonerama_album import ZoneramaAlbum
+
+from zonerama_downloader.zonerama_api import get_user_folder_public_albums
 
 
 class ZoneramaFolder:
@@ -14,7 +20,10 @@ class ZoneramaFolder:
         self.id = id
 
     def get_albums(self) -> list[ZoneramaAlbum]:
-        return get_public_folder_albums(self)
+        return [
+            ZoneramaAlbum(id, self, None)
+            for id in get_user_folder_public_albums(self.gallery.username, self.id)
+        ]
 
     @property
     def albums(self) -> list[ZoneramaAlbum]:

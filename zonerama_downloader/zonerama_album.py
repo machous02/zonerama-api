@@ -1,4 +1,10 @@
-from zonerama_downloader.zonerama_folder import ZoneramaFolder
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from zonerama_downloader.zonerama_folder import ZoneramaFolder
+
 from zonerama_downloader.download_album import download_album
 
 
@@ -30,5 +36,12 @@ class ZoneramaAlbum:
         sleep_for: float = 5.0,
     ) -> None:
         download_album(
-            self, include_videos, original, av1, raw, destination_folder, sleep_for
+            self.id,
+            self.secret_id,
+            include_videos,
+            original,
+            av1,
+            raw,
+            destination_folder,
+            sleep_for,
         )
