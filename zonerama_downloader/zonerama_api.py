@@ -2,17 +2,21 @@ import requests
 from bs4 import BeautifulSoup, Tag
 import re
 
-from zonerama_downloader.exceptions import InvalidZoneramaFolderIdException, InvalidZoneramaUsernameException
+from zonerama_downloader.exceptions import (
+    InvalidZoneramaFolderIdException,
+    InvalidZoneramaUsernameException,
+)
 
 AlbumId = str
 FolderId = str
+SecretId = str
 Username = str
 
 ZONERAMA_URL = "https://eu.zonerama.com"
 
 
-def get_user_folder_public_albums(
-    username: Username, folder_id: FolderId
+def get_user_folder_albums(
+    username: Username, folder_id: FolderId, secret_id: SecretId | None = None
 ) -> list[AlbumId]:
     """Provided with a Zonerama username and a folder id, \
         returns a list of ids of all albums in that folder. \
@@ -22,6 +26,9 @@ def get_user_folder_public_albums(
     Args:
         username (Username): An existing Zonerama username with a gallery.
         folder_id (FolderId): The id of an existing folder (tab) in the users gallery.
+        secret_id (str | None, optional): The secret id. \
+            Provide for secret folders, can be found in the URL for them. \
+            Defaults to None.
 
     Raises:
         InvalidZoneramaFolderIdException: \
@@ -30,7 +37,9 @@ def get_user_folder_public_albums(
     Returns:
         list[AlbumId]: A list of available album's IDs sorted in the aforementioned order.
     """
-    response = requests.get(f"{ZONERAMA_URL}/{username}/{folder_id}")
+    response = requests.get(
+        f"{ZONERAMA_URL}/{username}/{folder_id}", params={"secret": secret_id}
+    )
     response.raise_for_status()
 
     soup = BeautifulSoup(response.text, "lxml")
@@ -39,7 +48,7 @@ def get_user_folder_public_albums(
     )
 
     if slide_div is None:
-        raise InvalidZoneramaFolderIdException(folder_id)
+        raise InvalidZoneramaFolderIdException(folder_id, secret_id)
     assert isinstance(slide_div, Tag)
 
     mtchs = re.findall(r'data-album-id=\\"([^\\]+)\\"', str(slide_div))
