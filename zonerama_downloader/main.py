@@ -4,7 +4,7 @@ from zonerama_downloader.parse_arguments import parse, args_t
 
 def run_zip(args: args_t) -> None:
     download_album(
-        album_id=args.aid, secret_id=args.sid, include_videos=args.v, sleep_for=args.s
+        album_id=args.album_id, secret_id=args.secret_id, include_videos=args.videos, sleep_for=args.sleep
     )
 
 
