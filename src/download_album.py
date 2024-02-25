@@ -14,7 +14,7 @@ ZIP_REQUEST_URL = "https://zonerama.com/Zip/Album"
 ZIP_DOWNLOAD_URL = "https://zonerama.com/Zip/Download"
 
 
-def getZipId(
+def get_zip_id(
     album_id: str,
     secret_id: str | None = None,
     include_videos: bool = True,
@@ -61,7 +61,7 @@ def getZipId(
     return json["Id"]
 
 
-def downloadZip(zip_id: str, destination_folder: str, sleep_for: float = 5.0) -> None:
+def download_zip(zip_id: str, destination_folder: str, sleep_for: float = 5.0) -> None:
     """Download the generated ZIP file with the provided ID. \
         Wait while the file is not ready.
         Note: Downloads an empty archive \
@@ -109,7 +109,7 @@ def downloadZip(zip_id: str, destination_folder: str, sleep_for: float = 5.0) ->
         df.write(response.content)
 
 
-def downloadAlbum(
+def download_album(
     album_id: str,
     secret_id: str | None = None,
     include_videos: bool = True,
@@ -140,5 +140,5 @@ def downloadAlbum(
         sleep_for (float, optional): The time for which the function sleeps \
             while the file is not ready, in seconds. Defaults to 5.0.
     """
-    zip_id = getZipId(album_id, secret_id, include_videos, original, av1, raw)
-    downloadZip(zip_id, destination_folder, sleep_for)
+    zip_id = get_zip_id(album_id, secret_id, include_videos, original, av1, raw)
+    download_zip(zip_id, destination_folder, sleep_for)
