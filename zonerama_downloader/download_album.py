@@ -9,12 +9,14 @@ from zonerama_downloader.exceptions import (
     SecretIdNotSpecifiedException,
 )
 
+from zonerama_downloader.zonerama_album import ZoneramaAlbum
+
 
 ZIP_REQUEST_URL = "https://zonerama.com/Zip/Album"
 ZIP_DOWNLOAD_URL = "https://zonerama.com/Zip/Download"
 
 
-def get_zip_id(
+def _get_zip_id(
     album_id: str,
     secret_id: str | None = None,
     include_videos: bool = True,
@@ -61,7 +63,7 @@ def get_zip_id(
     return json["Id"]
 
 
-def download_zip(zip_id: str, destination_folder: str, sleep_for: float = 5.0) -> None:
+def _download_zip(zip_id: str, destination_folder: str, sleep_for: float = 5.0) -> None:
     """Download the generated ZIP file with the provided ID. \
         Wait while the file is not ready.
         Note: Downloads an empty archive \
@@ -109,7 +111,7 @@ def download_zip(zip_id: str, destination_folder: str, sleep_for: float = 5.0) -
         df.write(response.content)
 
 
-def download_album(
+def _download_album(
     album_id: str,
     secret_id: str | None = None,
     include_videos: bool = True,
@@ -140,5 +142,26 @@ def download_album(
         sleep_for (float, optional): The time for which the function sleeps \
             while the file is not ready, in seconds. Defaults to 5.0.
     """
-    zip_id = get_zip_id(album_id, secret_id, include_videos, original, av1, raw)
-    download_zip(zip_id, destination_folder, sleep_for)
+    zip_id = _get_zip_id(album_id, secret_id, include_videos, original, av1, raw)
+    _download_zip(zip_id, destination_folder, sleep_for)
+
+
+def download_album(
+    album: ZoneramaAlbum,
+    include_videos: bool = True,
+    original: bool = False,
+    av1: bool = False,
+    raw: bool = False,
+    destination_folder: str = os.getcwd(),
+    sleep_for: float = 5.0,
+) -> None:
+    _download_album(
+        album.id,
+        album.secret_id,
+        include_videos,
+        original,
+        av1,
+        raw,
+        destination_folder,
+        sleep_for,
+    )

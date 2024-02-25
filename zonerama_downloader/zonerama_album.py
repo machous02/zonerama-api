@@ -1,4 +1,5 @@
 from zonerama_downloader.zonerama_folder import ZoneramaFolder
+from zonerama_downloader.zon
 
 
 class ZoneramaAlbum:
@@ -18,3 +19,4 @@ class ZoneramaAlbum:
         self.id = id
         self.folder = folder
         self.secret_id = secret_id
+
