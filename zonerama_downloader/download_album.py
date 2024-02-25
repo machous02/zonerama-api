@@ -80,7 +80,6 @@ def _is_zip_ready(zip_id: str) -> bool:
 
 def _download_zip(zip_id: str, destination_folder: str, sleep_for: float = 5.0) -> None:
     """Download the generated ZIP file with the provided ID. \
-        Wait while the file is not ready.
         Note: Downloads an empty archive \
             if downloads are prohibited by the album's author.
 
@@ -95,10 +94,6 @@ def _download_zip(zip_id: str, destination_folder: str, sleep_for: float = 5.0) 
         InvalidZipIdException: The provided zip_id is invalid.
         UnknownResponseException: The server provided an unkown response.
     """
-    while not _is_zip_ready(zip_id):
-        print(f'Waiting on zip_id: {zip_id}, {sleep_for}s', file=sys.stderr)
-        sleep(sleep_for)
-
     response = requests.get(f"{ZIP_DOWNLOAD_URL}/{zip_id}")
     response.raise_for_status()
 
@@ -153,4 +148,7 @@ def download_album(
             while the file is not ready, in seconds. Defaults to 5.0.
     """
     zip_id = _get_zip_id(album_id, secret_id, include_videos, original, av1, raw)
+    while not _is_zip_ready(zip_id):
+        print(f'Waiting on zip_id: {zip_id}, {sleep_for}s', file=sys.stderr)
+        sleep(sleep_for)
     _download_zip(zip_id, destination_folder, sleep_for)
