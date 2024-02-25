@@ -1,11 +1,10 @@
-from zonerama_downloader.download_album import download_album
 from zonerama_downloader.parse_arguments import parse, args_t
+from zonerama_downloader.zonerama_album import ZoneramaAlbum
 
 
 def run_zip(args: args_t) -> None:
-    download_album(
-        album_id=args.album_id, secret_id=args.secret_id, include_videos=args.videos, sleep_for=args.sleep
-    )
+    album = ZoneramaAlbum(args.album_id, None, args.secret_id)
+    album.download(destination_folder=args.output, include_videos=args.videos, sleep_for=args.sleep)
 
 
 def main():
