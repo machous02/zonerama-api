@@ -22,10 +22,13 @@ class ZoneramaFolder:
         self.id = id
 
     def get_albums(self) -> list[ZoneramaAlbum]:
-        """Returns a list of albums in the folder.
+        """Returns a list of albums in the folder. \
+            The list is sorted as it would appear \
+            from top left to bottom right on the web.
 
         Returns:
-            list[ZoneramaAlbum]: A list of album objects representing albums in the folder.
+            list[ZoneramaAlbum]: A list of album objects representing albums in the folder. \
+                                 The list is sorted in the aforementioned order.
         """
         return [
             ZoneramaAlbum(id, self, None)
@@ -34,6 +37,7 @@ class ZoneramaFolder:
 
     @property
     def albums(self) -> list[ZoneramaAlbum]:
-        """A list of albums in the folder.
+        """A list of albums in the folder sorted as they would appear \
+            from top left to bottom right on the web.
         """
         return self.get_albums()

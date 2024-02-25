@@ -20,7 +20,8 @@ class ZoneramaGallery:
         self.username = username
 
     def get_public_folders(self) -> list[ZoneramaFolder]:
-        """Get all public folders (tabs) in the users gallery.
+        """Get all public folders (tabs) in the users gallery. \
+            The list is sorted as it appears left-to-right on the webpage.
 
         Returns:
             list[ZoneramaFolder]: A list of objects representing folders in the users gallery.
@@ -31,7 +32,8 @@ class ZoneramaGallery:
 
     @property
     def public_folders(self) -> list[ZoneramaFolder]:
-        """A list of public folders in the gallery.
+        """A list of public folders in the gallery. \
+            The list is sorted as it appears left-to-right on the webpage.
         """
         return self.get_public_folders()
 

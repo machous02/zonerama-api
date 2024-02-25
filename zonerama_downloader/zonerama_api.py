@@ -15,7 +15,9 @@ def get_user_folder_public_albums(
     username: Username, folder_id: FolderId
 ) -> list[AlbumId]:
     """Provided with a Zonerama username and a folder id, \
-        returns a list of ids of all albums in that folder.
+        returns a list of ids of all albums in that folder. \
+        The list is sorted as it would appear \
+        from top left to bottom right on the web.
 
     Args:
         username (Username): An existing Zonerama username with a gallery.
@@ -26,7 +28,7 @@ def get_user_folder_public_albums(
             The provided folder id is invalid for given username.
 
     Returns:
-        list[AlbumId]: A list of available album's IDs.
+        list[AlbumId]: A list of available album's IDs sorted in the aforementioned order.
     """
     response = requests.get(f"{ZONERAMA_URL}/{username}/{folder_id}")
     response.raise_for_status()
@@ -46,7 +48,8 @@ def get_user_folder_public_albums(
 
 def get_user_public_folders(username: Username) -> list[FolderId]:
     """Provided with a Zonerama username, \
-        returns a list of ids of folders (tabs) in the user's gallery.
+        returns a list of ids of folders (tabs) in the user's gallery \
+        sorted in order which appears as left-to-right on the webpage.
 
     Args:
         username (Username): An existing Zonerama username with a gallery.
@@ -56,7 +59,8 @@ def get_user_public_folders(username: Username) -> list[FolderId]:
             The provided username is invalid.
 
     Returns:
-        list[FolderId]: A list of public folders in the user's gallery.
+        list[FolderId]: A list of public folders in the user's gallery \
+        sorted in the aforementioned order.
     """
     response = requests.get(f"{ZONERAMA_URL}/{username}")
     response.raise_for_status()
