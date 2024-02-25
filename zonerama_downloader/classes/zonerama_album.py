@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from zonerama_downloader.zonerama_folder import ZoneramaFolder
+    from zonerama_downloader.classes.zonerama_folder import ZoneramaFolder
 
 from zonerama_downloader.download_album import download_album
 
