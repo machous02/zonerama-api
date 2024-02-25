@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup, Tag
 import re
 
-from exceptions import InvalidZoneramaFolderIdException, InvalidZoneramaUsernameException
+from zonerama_downloader.exceptions import InvalidZoneramaFolderIdException, InvalidZoneramaUsernameException
 
 AlbumId = str
 FolderId = str

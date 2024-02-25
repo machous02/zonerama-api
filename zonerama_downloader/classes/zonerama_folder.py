@@ -4,9 +4,9 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from zonerama_downloader.classes.zonerama_gallery import ZoneramaGallery
-    from zonerama_downloader.classes.zonerama_album import ZoneramaAlbum
 
 from zonerama_downloader.zonerama_api import get_user_folder_public_albums
+from zonerama_downloader.classes.zonerama_album import ZoneramaAlbum
 
 
 class ZoneramaFolder:
