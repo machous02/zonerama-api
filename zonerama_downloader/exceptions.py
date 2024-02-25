@@ -8,6 +8,7 @@ class ZipDownloaderException(ZoneramaDownloaderException):
 
 class InvalidZipIdException(ZipDownloaderException):
     id: str
+    message: str | None
 
 
 class UnknownResponseException(ZipDownloaderException):
@@ -23,7 +24,10 @@ class ZoneramaApiException(ZoneramaDownloaderException):
 
 
 class InvalidZoneramaFolderIdException(ZoneramaApiException):
-    id: str
+    """Invalid folder id or secret id.
+    """
+    folder_id: str
+    secret_id: str | None
 
 
 class InvalidZoneramaUsernameException(ZoneramaApiException):

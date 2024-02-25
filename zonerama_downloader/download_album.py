@@ -2,6 +2,7 @@ import requests
 import os
 import re
 from time import sleep
+import sys
 
 from zonerama_downloader.exceptions import (
     InvalidZipIdException,
@@ -11,6 +12,7 @@ from zonerama_downloader.exceptions import (
 
 
 ZIP_REQUEST_URL = "https://zonerama.com/Zip/Album"
+ZIP_READY_URL = "https://zonerama.com/Zip/IsReady"
 ZIP_DOWNLOAD_URL = "https://zonerama.com/Zip/Download"
 
 
@@ -61,6 +63,21 @@ def _get_zip_id(
     return json["Id"]
 
 
+def _is_zip_ready(zip_id: str) -> bool:
+    response = requests.get(f"{ZIP_READY_URL}/{zip_id}")
+    response.raise_for_status()
+
+    if response.headers["content-type"] != "application/json; charset=utf-8":
+        raise InvalidZipIdException(zip_id)
+
+    json = response.json()
+
+    if json["Error"] is not None:
+        raise InvalidZipIdException(zip_id, json["Error"])
+
+    return json["IsReady"]
+
+
 def _download_zip(zip_id: str, destination_folder: str, sleep_for: float = 5.0) -> None:
     """Download the generated ZIP file with the provided ID. \
         Wait while the file is not ready.
@@ -78,17 +95,12 @@ def _download_zip(zip_id: str, destination_folder: str, sleep_for: float = 5.0) 
         InvalidZipIdException: The provided zip_id is invalid.
         UnknownResponseException: The server provided an unkown response.
     """
-    response = requests.get(f"{ZIP_DOWNLOAD_URL}/{zip_id}")
-    response.raise_for_status()
-
-    while (
-        response.headers["content-type"] == "text/html; charset=utf-8"
-        and response.text == "ZipFile is not ready"
-    ):
+    while not _is_zip_ready(zip_id):
+        print(f'Waiting on zip_id: {zip_id}, {sleep_for}s', file=sys.stderr)
         sleep(sleep_for)
 
-        response = requests.get(f"{ZIP_DOWNLOAD_URL}/{zip_id}")
-        response.raise_for_status()
+    response = requests.get(f"{ZIP_DOWNLOAD_URL}/{zip_id}")
+    response.raise_for_status()
 
     if response.headers["content-type"] == "text/html; charset=utf-8":
         match response.text:
@@ -142,3 +154,6 @@ def download_album(
     """
     zip_id = _get_zip_id(album_id, secret_id, include_videos, original, av1, raw)
     _download_zip(zip_id, destination_folder, sleep_for)
+
+
+download_album('11004064')
