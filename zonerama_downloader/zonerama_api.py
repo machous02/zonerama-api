@@ -22,7 +22,7 @@ ZONERAMA_URL = 'https://eu.zonerama.com'
 #         print(i)
 
 def get_user_public_folders(username: username_t) -> list[folder_id_t]:
-    response = requests.get('https://eu.zonerama.com/mustangove/1302305')
+    response = requests.get(f'{ZONERAMA_URL}/{username}')
     response.raise_for_status()
     
     soup = BeautifulSoup(response.text, 'lxml')
@@ -32,5 +32,3 @@ def get_user_public_folders(username: username_t) -> list[folder_id_t]:
     divs = tabs_list_div.find_all(class_='item')
 
     return [div['data-tab-id'] for div in divs]
-
-get_user_public_folders('mustangove')
