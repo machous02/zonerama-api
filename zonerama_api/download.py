@@ -131,10 +131,10 @@ def download_size(album_id: str, videos: bool, secret_id: str | None = None) -> 
         },
     )
 
-    if response.headers['content-type'] != 'application/json; charset=utf-8':
+    if response.headers["content-type"] != "application/json; charset=utf-8":
         raise SecretIdNotSpecifiedException()
 
-    return response.json()['text']
+    return response.json()["text"]
 
 
 def download_album(
