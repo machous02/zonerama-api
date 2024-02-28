@@ -18,6 +18,7 @@ AlbumId = str
 FolderId = str
 SecretId = str
 Username = str
+UserId = str
 ZipId = str
 
 ZONERAMA_URL = "https://eu.zonerama.com"
@@ -26,6 +27,7 @@ ZIP_REQUEST_URL = "https://zonerama.com/Zip/Album"
 ZIP_READY_URL = "https://zonerama.com/Zip/IsReady"
 ZIP_SIZE_URL = "https://zonerama.com/Download/Size"
 ZIP_DOWNLOAD_URL = "https://zonerama.com/Zip/Download"
+ALBUM_BASE_URL = "https://zonerama.com/Link/Album"
 
 
 def get_user_folder_albums(
@@ -246,9 +248,11 @@ class AlbumSize:
     photo_count: int
     video_included: bool
     video_count: int
-    zip_size: float # in bytes
+    zip_size: float  # in bytes
 
-    def __init__(self, photo_count: int, videos_included: bool, video_count: int, zip_size: float) -> None:
+    def __init__(
+        self, photo_count: int, videos_included: bool, video_count: int, zip_size: float
+    ) -> None:
         self.photo_count = photo_count
         self.video_included = videos_included
         self.video_count = video_count
@@ -291,9 +295,9 @@ def get_album_size(
             case "kB":
                 return num * 1_024
             case "MB":
-                return num * (1_024 ** 2)
+                return num * (1_024**2)
             case "GB":
-                return num * (1_024 ** 3)
+                return num * (1_024**3)
             case _:
                 assert False
 
@@ -303,3 +307,16 @@ def get_album_size(
         int(video_count),
         into_bytes(size_num, mtch["unit"]),
     )
+
+
+def get_album_name(album_id: AlbumId) -> str:
+    response = requests.get(f"{ALBUM_BASE_URL}/{album_id}")
+    response.raise_for_status()
+
+    soup = BeautifulSoup(response.text, features="lxml")
+    title = soup.find("meta", property="og:title")
+    assert isinstance(title, Tag)
+
+    album_name = title["content"]
+    assert isinstance(album_name, str)
+    return album_name
