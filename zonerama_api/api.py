@@ -13,12 +13,13 @@ from zonerama_api.exceptions import (
     SecretIdNotSpecifiedException,
 )
 
-AlbumId = str
-FolderId = str
-SecretId = str
-Username = str
-UserId = str
-ZipId = str
+from zonerama_api.typing import (
+    AlbumId,
+    FolderId,
+    SecretId,
+    Username,
+    ZipId,
+)
 
 ZONERAMA_URL = "https://eu.zonerama.com"
 
@@ -27,7 +28,16 @@ ZIP_READY_URL = "https://zonerama.com/Zip/IsReady"
 ZIP_SIZE_URL = "https://zonerama.com/Download/Size"
 ZIP_DOWNLOAD_URL = "https://zonerama.com/Zip/Download"
 ALBUM_BASE_URL = "https://zonerama.com/Link/Album"
-PROFILE_BASE_URL = "https://zonerama.com/Profile"
+PROFILE_BASE_URL = "https://eu.zonerama.com/Profile"
+
+# def get_profile_url(identificator: str, is_username: bool = True) -> str:
+#     if is_username:
+#         return
+
+# def get_profile_url_id() -> Url:
+#     pass
+
+# def get_profile_url_
 
 
 def get_user_folder_albums(

@@ -5,14 +5,13 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from zonerama_api.classes.zonerama_album import ZoneramaAlbum
 
+from zonerama_api.typing import Username
 from zonerama_api.api import get_user_public_folders
 from zonerama_api.classes.zonerama_folder import ZoneramaFolder
 
 
 class ZoneramaGallery:
-    """A class representing a user's Zonerama Web Gallery.
-    """
-    Username = str
+    """A class representing a user's Zonerama Web Gallery."""
 
     username: Username
 
@@ -50,6 +49,5 @@ class ZoneramaGallery:
 
     @property
     def public_albums(self) -> list[ZoneramaAlbum]:
-        """A list of albums in public folders in the gallery.
-        """
+        """A list of albums in public folders in the gallery."""
         return self.get_public_albums()

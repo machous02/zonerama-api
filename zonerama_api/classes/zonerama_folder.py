@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from zonerama_api.classes.zonerama_gallery import ZoneramaGallery
 
+from zonerama_api.typing import FolderId, SecretId
 from zonerama_api.api import get_user_folder_albums
 from zonerama_api.classes.zonerama_album import ZoneramaAlbum
 
@@ -12,18 +13,15 @@ from zonerama_api.classes.zonerama_album import ZoneramaAlbum
 class ZoneramaFolder:
     """A class representing a folder (a tab) in a user's Zonerama Web Gallery."""
 
-    FolderId = str
-    SecretFolderId = str
-
     gallery: ZoneramaGallery
     id: FolderId
-    secret_id: SecretFolderId | None
+    secret_id: SecretId | None
 
     def __init__(
         self,
         gallery: ZoneramaGallery,
         id: FolderId,
-        secret_id: SecretFolderId | None = None,
+        secret_id: SecretId | None = None,
     ):
         self.gallery = gallery
         self.id = id
@@ -40,7 +38,9 @@ class ZoneramaFolder:
         """
         return [
             ZoneramaAlbum(id, self, self.secret_id)
-            for id in get_user_folder_albums(self.gallery.username, self.id, self.secret_id)
+            for id in get_user_folder_albums(
+                self.gallery.username, self.id, self.secret_id
+            )
         ]
 
     @property

@@ -6,6 +6,7 @@ from functools import cached_property
 if TYPE_CHECKING:
     from zonerama_api.classes.zonerama_folder import ZoneramaFolder
 
+from zonerama_api.typing import AlbumId, SecretId
 from zonerama_api.api import (
     download_album,
     get_album_size,
@@ -16,9 +17,6 @@ from zonerama_api.api import (
 
 class ZoneramaAlbum:
     """A class representing an album in the Zonerama Web Gallery."""
-
-    AlbumId = str
-    SecretId = str
 
     folder: ZoneramaFolder | None
     id: AlbumId
