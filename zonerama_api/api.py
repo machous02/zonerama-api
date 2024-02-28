@@ -18,6 +18,7 @@ AlbumId = str
 FolderId = str
 SecretId = str
 Username = str
+ZipId = str
 
 ZONERAMA_URL = "https://eu.zonerama.com"
 
@@ -105,7 +106,7 @@ def _get_zip_id(
     original: bool = False,
     av1: bool = False,
     raw: bool = False,
-) -> str:
+) -> ZipId:
     """Send a request to generate a ZIP file \
         and return the ID of the ZIP file for given album.
 
@@ -121,7 +122,7 @@ def _get_zip_id(
         raw (bool): unkonwn, defaults to False
 
     Returns:
-        str: The ID of the requested ZIP file to be used in downloadZip.
+        ZipId: The ID of the requested ZIP file to be used in downloadZip.
     """
 
     response = requests.get(
@@ -145,7 +146,7 @@ def _get_zip_id(
     return json["Id"]
 
 
-def _is_zip_ready(zip_id: str) -> bool:
+def _is_zip_ready(zip_id: ZipId) -> bool:
     response = requests.get(f"{ZIP_READY_URL}/{zip_id}")
     response.raise_for_status()
 
@@ -160,13 +161,13 @@ def _is_zip_ready(zip_id: str) -> bool:
     return json["IsReady"]
 
 
-def _download_zip(zip_id: str, destination_folder: str, sleep_for: float = 5.0) -> None:
+def _download_zip(zip_id: ZipId, destination_folder: str, sleep_for: float = 5.0) -> None:
     """Download the generated ZIP file with the provided ID. \
         Note: Downloads an empty archive \
             if downloads are prohibited by the album's author.
 
     Args:
-        zip_id (str): The ID of the generated ZIP file. Output of getZipId.
+        zip_id (ZipId): The ID of the generated ZIP file. Output of getZipId.
         destination_folder (str): The destination folder for the ZIP file.
         sleep_for (float, optional): \
             The time for which the function sleeps \
@@ -196,26 +197,6 @@ def _download_zip(zip_id: str, destination_folder: str, sleep_for: float = 5.0) 
 
     with open(os.path.join(destination_folder, filename), "wb") as df:
         df.write(response.content)
-
-
-def download_size(album_id: str, videos: bool, secret_id: str | None = None) -> str:
-    response = requests.post(
-        ZIP_SIZE_URL,
-        data={
-            "albumId": album_id,
-            "photoId": "",
-            "filter": "",
-            "secret": secret_id,
-            "download_Album": False,
-            "download_Videos": videos,
-            "download_RAWs": False,
-        },
-    )
-
-    if response.headers["content-type"] != "application/json; charset=utf-8":
-        raise SecretIdNotSpecifiedException()
-
-    return response.json()["text"]
 
 
 def download_album(
@@ -256,3 +237,23 @@ def download_album(
         sleep(sleep_for)
 
     _download_zip(zip_id, destination_folder, sleep_for)
+
+
+def download_size(album_id: str, videos: bool, secret_id: str | None = None) -> str:
+    response = requests.post(
+        ZIP_SIZE_URL,
+        data={
+            "albumId": album_id,
+            "photoId": "",
+            "filter": "",
+            "secret": secret_id,
+            "download_Album": False,
+            "download_Videos": videos,
+            "download_RAWs": False,
+        },
+    )
+
+    if response.headers["content-type"] != "application/json; charset=utf-8":
+        raise SecretIdNotSpecifiedException()
+
+    return response.json()["text"]
