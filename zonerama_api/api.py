@@ -4,7 +4,7 @@ import re
 import os
 from time import sleep
 import sys
-
+from collections import namedtuple
 
 from zonerama_api.exceptions import (
     InvalidZoneramaFolderIdException,
@@ -161,7 +161,9 @@ def _is_zip_ready(zip_id: ZipId) -> bool:
     return json["IsReady"]
 
 
-def _download_zip(zip_id: ZipId, destination_folder: str, sleep_for: float = 5.0) -> None:
+def _download_zip(
+    zip_id: ZipId, destination_folder: str, sleep_for: float = 5.0
+) -> None:
     """Download the generated ZIP file with the provided ID. \
         Note: Downloads an empty archive \
             if downloads are prohibited by the album's author.
@@ -184,6 +186,7 @@ def _download_zip(zip_id: ZipId, destination_folder: str, sleep_for: float = 5.0
         match response.text:
             case "ZipID is invalid":
                 raise InvalidZipIdException(zip_id)
+            # add Zip is not ready
 
             case _:
                 raise UnknownResponseException(response.text)
@@ -200,8 +203,8 @@ def _download_zip(zip_id: ZipId, destination_folder: str, sleep_for: float = 5.0
 
 
 def download_album(
-    album_id: str,
-    secret_id: str | None = None,
+    album_id: AlbumId,
+    secret_id: SecretId | None = None,
     include_videos: bool = True,
     original: bool = False,
     av1: bool = False,
@@ -214,10 +217,10 @@ def download_album(
         If the author has prohibited downloads, downloads an empty archive.
 
     Args:
-        album_id (str): The ID of the album you wish to download. \
+        album_id (AlbumId): The ID of the album you wish to download. \
             This is the string of numbers, \
             which can be found in the URL after Album/.
-        secret_id (str | None, optional): The secret id. \
+        secret_id (SecretId | None, optional): The secret id. \
             Provide for secret albums, can be found in the URL for them. \
             Defaults to None.
         include_videos (bool, optional): Whether videos are included \
@@ -239,7 +242,20 @@ def download_album(
     _download_zip(zip_id, destination_folder, sleep_for)
 
 
-def download_size(album_id: str, videos: bool, secret_id: str | None = None) -> str:
+class AlbumSize:
+    photo_count: int
+    video_count: int
+    zip_size: float # in bytes
+
+    def __init__(self, photo_count: int, video_count: int, zip_size: float) -> None:
+        self.photo_count = photo_count
+        self.video_count = video_count
+        self.zip_size = zip_size
+
+
+def get_album_size(
+    album_id: AlbumId, videos: bool = True, secret_id: SecretId | None = None
+) -> AlbumSize:
     response = requests.post(
         ZIP_SIZE_URL,
         data={
@@ -256,4 +272,31 @@ def download_size(album_id: str, videos: bool, secret_id: str | None = None) -> 
     if response.headers["content-type"] != "application/json; charset=utf-8":
         raise SecretIdNotSpecifiedException()
 
-    return response.json()["text"]
+    txt = response.json()["text"]
+    mtch = re.match(
+        r"Předpokládaná velikost archivu (?P<photo_count>\d+) fotek"
+        r"(?: a (?P<video_count>\d+) videí)?"
+        r" je (?P<size_whole>\d+),(?P<size_dec>\d+) (?P<unit>[kMG]B).",
+        txt,
+    )
+    assert mtch is not None
+
+    video_count = "0" if mtch["video_count"] is None else mtch["video_count"]
+    size_num = float(f"{mtch['size_whole']}.{mtch['size_dec']}")
+
+    def into_bytes(num: float, unit: str) -> float:
+        match unit:
+            case "kB":
+                return num * 1_024
+            case "MB":
+                return num * (1_024 ** 2)
+            case "GB":
+                return num * (1_024 ** 3)
+            case _:
+                assert False
+
+    return AlbumSize(
+        int(mtch["photo_count"]),
+        int(video_count),
+        into_bytes(size_num, mtch["unit"]),
+    )
