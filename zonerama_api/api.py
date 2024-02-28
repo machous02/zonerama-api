@@ -4,7 +4,6 @@ import re
 import os
 from time import sleep
 import sys
-from collections import namedtuple
 
 from zonerama_api.exceptions import (
     InvalidZoneramaFolderIdException,
