@@ -18,6 +18,7 @@ from zonerama_api.typing import (
     FolderId,
     SecretId,
     Username,
+    UserId,
     ZipId,
 )
 
@@ -30,14 +31,22 @@ ZIP_DOWNLOAD_URL = "https://zonerama.com/Zip/Download"
 ALBUM_BASE_URL = "https://zonerama.com/Link/Album"
 PROFILE_BASE_URL = "https://eu.zonerama.com/Profile"
 
-# def get_profile_url(identificator: str, is_username: bool = True) -> str:
-#     if is_username:
-#         return
 
-# def get_profile_url_id() -> Url:
-#     pass
+def is_user_id(identificator: str) -> bool:
+    return identificator.isdigit()
 
-# def get_profile_url_
+
+def get_username(user_id: UserId) -> Username:
+    response = requests.get(f"{PROFILE_BASE_URL}/{user_id}")
+    response.raise_for_status()
+
+    soup = BeautifulSoup(response.text, features="lxml")
+    account_tag = soup.find("meta", property="og:title")
+    assert isinstance(account_tag, Tag)
+
+    username = account_tag["content"]
+    assert isinstance(username, str)
+    return username
 
 
 def get_user_folder_albums(
@@ -63,7 +72,7 @@ def get_user_folder_albums(
         list[AlbumId]: A list of available album's IDs sorted in the aforementioned order.
     """
     response = requests.get(
-        f"{PROFILE_BASE_URL}/{username}/{folder_id}", params={"secret": secret_id}
+        f"{ZONERAMA_URL}/{username}/{folder_id}", params={"secret": secret_id}
     )
     response.raise_for_status()
 
@@ -96,7 +105,7 @@ def get_user_public_folders(username: Username) -> list[FolderId]:
         list[FolderId]: A list of public folders in the user's gallery \
         sorted in the aforementioned order.
     """
-    response = requests.get(f"{PROFILE_BASE_URL}/{username}")
+    response = requests.get(f"{ZONERAMA_URL}/{username}")
     response.raise_for_status()
 
     soup = BeautifulSoup(response.text, "lxml")

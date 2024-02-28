@@ -1,4 +1,5 @@
 from zonerama_api.classes.zonerama_gallery import ZoneramaGallery
+from zonerama_api.api import get_username
 
 zg = ZoneramaGallery('Renda7')
 

@@ -5,7 +5,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from zonerama_api.classes.zonerama_album import ZoneramaAlbum
 
-from zonerama_api.typing import Username
+from zonerama_api.typing import UserIdentifier
+from zonerama_api.classes.zonerama_user import ZoneramaUser
 from zonerama_api.api import get_user_public_folders
 from zonerama_api.classes.zonerama_folder import ZoneramaFolder
 
@@ -13,10 +14,10 @@ from zonerama_api.classes.zonerama_folder import ZoneramaFolder
 class ZoneramaGallery:
     """A class representing a user's Zonerama Web Gallery."""
 
-    username: Username
+    user: ZoneramaUser
 
-    def __init__(self, username: Username):
-        self.username = username
+    def __init__(self, identifier: UserIdentifier):
+        self.user = ZoneramaUser(identifier)
 
     def get_public_folders(self) -> list[ZoneramaFolder]:
         """Get all public folders (tabs) in the users gallery. \
@@ -26,7 +27,7 @@ class ZoneramaGallery:
             list[ZoneramaFolder]: A list of objects representing folders in the users gallery.
         """
         return [
-            ZoneramaFolder(self, id) for id in get_user_public_folders(self.username)
+            ZoneramaFolder(self, id) for id in get_user_public_folders(self.user.username)
         ]
 
     @property

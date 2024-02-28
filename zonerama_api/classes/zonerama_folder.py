@@ -39,7 +39,7 @@ class ZoneramaFolder:
         return [
             ZoneramaAlbum(id, self, self.secret_id)
             for id in get_user_folder_albums(
-                self.gallery.username, self.id, self.secret_id
+                self.gallery.user.username, self.id, self.secret_id
             )
         ]
 
