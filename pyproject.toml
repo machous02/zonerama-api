@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "zonerama-downloader"
+name = "zonerama-api"
 version = "0.2.0"
 description = ""
-authors = ["Your Name <you@example.com>"]
+authors = ["Jan Mach <you@example.com>"]
 license = "MIT"
 readme = "README.md"
 
@@ -14,7 +14,7 @@ lxml = "^5.1.0"
 bs4 = "^0.0.2"
 
 [tool.poetry.scripts]
-zonerama_downloader = 'zonerama_downloader.main:main'
+zonerama_downloader = 'zonerama_api.main:main'
 
 
 [build-system]
