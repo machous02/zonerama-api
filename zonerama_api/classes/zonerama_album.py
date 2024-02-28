@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from zonerama_api.classes.zonerama_folder import ZoneramaFolder
 
-from zonerama_api.download import download_album
+from zonerama_api.api import download_album
 
 
 class ZoneramaAlbum:
