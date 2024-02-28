@@ -4,7 +4,7 @@ import re
 from time import sleep
 import sys
 
-from zonerama_downloader.exceptions import (
+from zonerama_api.exceptions import (
     InvalidZipIdException,
     UnknownResponseException,
     SecretIdNotSpecifiedException,

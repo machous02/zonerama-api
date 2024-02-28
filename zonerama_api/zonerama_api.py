@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup, Tag
 import re
 
-from zonerama_downloader.exceptions import (
+from zonerama_api.exceptions import (
     InvalidZoneramaFolderIdException,
     InvalidZoneramaUsernameException,
 )

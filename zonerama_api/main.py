@@ -1,5 +1,5 @@
-from zonerama_downloader.parse_arguments import parse, args_t
-from zonerama_downloader.classes.zonerama_album import ZoneramaAlbum
+from zonerama_api.parse_arguments import parse, args_t
+from zonerama_api.classes.zonerama_album import ZoneramaAlbum
 
 
 def run_zip(args: args_t) -> None:

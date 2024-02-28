@@ -3,10 +3,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from zonerama_downloader.classes.zonerama_album import ZoneramaAlbum
+    from zonerama_api.classes.zonerama_album import ZoneramaAlbum
 
-from zonerama_downloader.zonerama_api import get_user_public_folders
-from zonerama_downloader.classes.zonerama_folder import ZoneramaFolder
+from zonerama_api.zonerama_api import get_user_public_folders
+from zonerama_api.classes.zonerama_folder import ZoneramaFolder
 
 
 class ZoneramaGallery:
