@@ -1,5 +1,5 @@
-# zonerama-downloader
-A python library for downloading from Zonerama.
+# zonerama-api
+A python library for interacting with Zonerama Web Library.
 
 ## Installation
 Clone the repository, then run
