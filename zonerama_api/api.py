@@ -244,11 +244,13 @@ def download_album(
 
 class AlbumSize:
     photo_count: int
+    video_included: bool
     video_count: int
     zip_size: float # in bytes
 
-    def __init__(self, photo_count: int, video_count: int, zip_size: float) -> None:
+    def __init__(self, photo_count: int, videos_included: bool, video_count: int, zip_size: float) -> None:
         self.photo_count = photo_count
+        self.video_included = videos_included
         self.video_count = video_count
         self.zip_size = zip_size
 
@@ -297,6 +299,7 @@ def get_album_size(
 
     return AlbumSize(
         int(mtch["photo_count"]),
+        videos,
         int(video_count),
         into_bytes(size_num, mtch["unit"]),
     )
