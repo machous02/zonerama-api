@@ -27,6 +27,7 @@ ZIP_READY_URL = "https://zonerama.com/Zip/IsReady"
 ZIP_SIZE_URL = "https://zonerama.com/Download/Size"
 ZIP_DOWNLOAD_URL = "https://zonerama.com/Zip/Download"
 ALBUM_BASE_URL = "https://zonerama.com/Link/Album"
+PROFILE_BASE_URL = "https://zonerama.com/Profile"
 
 
 def get_user_folder_albums(
@@ -52,7 +53,7 @@ def get_user_folder_albums(
         list[AlbumId]: A list of available album's IDs sorted in the aforementioned order.
     """
     response = requests.get(
-        f"{ZONERAMA_URL}/{username}/{folder_id}", params={"secret": secret_id}
+        f"{PROFILE_BASE_URL}/{username}/{folder_id}", params={"secret": secret_id}
     )
     response.raise_for_status()
 
@@ -85,7 +86,7 @@ def get_user_public_folders(username: Username) -> list[FolderId]:
         list[FolderId]: A list of public folders in the user's gallery \
         sorted in the aforementioned order.
     """
-    response = requests.get(f"{ZONERAMA_URL}/{username}")
+    response = requests.get(f"{PROFILE_BASE_URL}/{username}")
     response.raise_for_status()
 
     soup = BeautifulSoup(response.text, "lxml")
