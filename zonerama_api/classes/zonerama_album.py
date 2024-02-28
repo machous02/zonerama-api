@@ -1,16 +1,22 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from functools import cached_property
 
 if TYPE_CHECKING:
     from zonerama_api.classes.zonerama_folder import ZoneramaFolder
 
-from zonerama_api.api import download_album
+from zonerama_api.api import (
+    download_album,
+    get_album_size,
+    get_album_name,
+    AlbumSize,
+)
 
 
 class ZoneramaAlbum:
-    """A class representing an album in the Zonerama Web Gallery.
-    """
+    """A class representing an album in the Zonerama Web Gallery."""
+
     AlbumId = str
     SecretId = str
 
@@ -27,6 +33,32 @@ class ZoneramaAlbum:
         self.id = id
         self.folder = folder
         self.secret_id = secret_id
+
+    def get_name(self) -> str:
+        return get_album_name(self.id)
+
+    @cached_property
+    def name(self) -> str:
+        return self.get_name()
+
+    def get_size(self, include_videos: bool = True) -> AlbumSize:
+        return get_album_size(self.id, include_videos, self.secret_id)
+
+    @cached_property
+    def size(self) -> AlbumSize:
+        return self.get_size()
+
+    @property
+    def photo_count(self) -> int:
+        return self.size.photo_count
+
+    @property
+    def video_count(self) -> int:
+        return self.size.video_count
+
+    @property
+    def zip_size(self) -> int:
+        return self.size.zip_size
 
     def download(
         self,

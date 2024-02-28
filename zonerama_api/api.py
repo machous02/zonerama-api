@@ -247,10 +247,10 @@ class AlbumSize:
     photo_count: int
     video_included: bool
     video_count: int
-    zip_size: float  # in bytes
+    zip_size: int  # in bytes
 
     def __init__(
-        self, photo_count: int, videos_included: bool, video_count: int, zip_size: float
+        self, photo_count: int, videos_included: bool, video_count: int, zip_size: int
     ) -> None:
         self.photo_count = photo_count
         self.video_included = videos_included
@@ -289,14 +289,14 @@ def get_album_size(
     video_count = "0" if mtch["video_count"] is None else mtch["video_count"]
     size_num = float(f"{mtch['size_whole']}.{mtch['size_dec']}")
 
-    def into_bytes(num: float, unit: str) -> float:
+    def into_bytes(num: float, unit: str) -> int:
         match unit:
             case "kB":
-                return num * 1_024
+                return int(num * 1_024)
             case "MB":
-                return num * (1_024**2)
+                return int(num * (1_024**2))
             case "GB":
-                return num * (1_024**3)
+                return int(num * (1_024**3))
             case _:
                 assert False
 
