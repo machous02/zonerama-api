@@ -4,6 +4,7 @@ import re
 import os
 from time import sleep
 import sys
+from dataclasses import dataclass
 
 from zonerama_api.exceptions import (
     InvalidPhotoIdException,
@@ -34,6 +35,7 @@ ALBUM_BASE_URL = "https://zonerama.com/Link/Album"
 PROFILE_BASE_URL = "https://eu.zonerama.com/Profile"
 PHOTO_DOWNLOAD_URL = "https://zonerama.com/Download/Photo"
 ALBUM_PHOTO_LIST_URL = "https://zonerama.com/JSON/FlowLayout_PhotosInAlbum"
+PHOTO_INFO_URL = "https://eu.zonerama.com/Part/PhotoOnSlide"
 
 
 def is_user_id(identificator: str) -> bool:
@@ -297,19 +299,12 @@ def download_photo(photo_id: PhotoId, destination_folder: str = os.getcwd()) -> 
         df.write(response.content)
 
 
+@dataclass
 class AlbumSize:
     photo_count: int
     video_included: bool
     video_count: int
     zip_size: int  # in bytes
-
-    def __init__(
-        self, photo_count: int, videos_included: bool, video_count: int, zip_size: int
-    ) -> None:
-        self.photo_count = photo_count
-        self.video_included = videos_included
-        self.video_count = video_count
-        self.zip_size = zip_size
 
 
 def get_album_size(
@@ -376,3 +371,43 @@ def get_album_name(album_id: AlbumId) -> str:
     album_name = title["content"]
     assert isinstance(album_name, str)
     return album_name
+
+
+@dataclass
+class PhotoInfo:
+    name: str
+    size: str
+    resolution: tuple[int, int, int]
+    date_added: str
+    author: str
+    copyright: str
+    created_date: str
+    changed_date: str
+    iso: int
+    exposure_time: str
+    aperature: float
+    focal_length: str
+    effective_focal_length: str
+    lens: str
+    exposure_compensation: str
+    color_profile: str
+    camera: str
+    software: str
+
+
+def get_photo_info(photo_id: PhotoId) -> PhotoInfo: # WIP
+    pass
+
+    response = requests.get(PHOTO_INFO_URL, params={"ID": photo_id})
+    response.raise_for_status()
+
+    soup = BeautifulSoup(response.text, features="lxml")
+    param = soup.find("div", class_="param")
+    assert isinstance(param, Tag)
+    tbody = param.find("tbody")
+    assert isinstance(tbody, Tag)
+
+    params = [
+        tr.find_all("td")[1].text.strip() for tr in tbody.find_all("tr") if len(tr) >= 2
+    ]
+    return PhotoInfo(*params)
