@@ -139,8 +139,8 @@ def _get_zip_id(
             Whether videos are included or just their thumbnails. \
             Defaults to True.
         original (bool): unknown, defaults to False
-        av1 (bool): Whether the av1 codec should be preferred if available. Defaults to False.
-        raw (bool): unkonwn, defaults to False
+        av1 (bool): Whether the av1 codec should be preferred when available. Defaults to False.
+        raw (bool): Whether raw files should be included when available. Defaults to False.
 
     Returns:
         ZipId: The ID of the requested ZIP file to be used in downloadZip.
@@ -247,8 +247,8 @@ def download_album(
         include_videos (bool, optional): Whether videos are included \
             or just their thumbnails. Defaults to True.
         original (bool): unknown, defaults to False
-        av1 (bool): Whether the av1 codec should be preferred if available. Defaults to False.
-        raw (bool): unkonwn, defaults to False
+        av1 (bool): Whether the av1 codec should be preferred when available. Defaults to False.
+        raw (bool): Whether raw files should be included when available. Defaults to False.
         destination_folder (str, optional): \
             The destination folder for the ZIP file. Defaults to os.getcwd().
         sleep_for (float, optional): The time for which the function sleeps \

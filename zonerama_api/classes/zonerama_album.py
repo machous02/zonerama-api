@@ -75,8 +75,8 @@ class ZoneramaAlbum:
             include_videos (bool, optional): Whether videos are included \
                 or just their thumbnails. Defaults to True.
             original (bool, optional): Unknown. Defaults to False.
-            av1 (bool, optional): Whether the av1 codec should be preferred if available. Defaults to False.
-            raw (bool, optional): Unknown. Defaults to False.
+            av1 (bool, optional): Whether the av1 codec should be preferred when available. Defaults to False.
+            raw (bool, optional): Whether raw files should be included when available. Defaults to False.
             sleep_for (float, optional): The time for which the function sleeps \
                 while the file is not ready, in seconds. Defaults to 5.0.
         """
