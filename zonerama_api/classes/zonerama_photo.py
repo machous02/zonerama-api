@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from zonerama_api.classes.zonerama_album import ZoneramaAlbum
 
-from zonerama_api.typing import PhotoId
+from zonerama_api.z_typing import PhotoId
 from zonerama_api.api import download_photo
 
 class ZoneramaPhoto:

@@ -14,7 +14,7 @@ from zonerama_api.exceptions import (
     SecretIdNotSpecifiedException,
 )
 
-from zonerama_api.typing import (
+from zonerama_api.z_typing import (
     PhotoId,
     AlbumId,
     FolderId,

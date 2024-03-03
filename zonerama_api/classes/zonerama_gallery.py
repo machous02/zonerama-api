@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from zonerama_api.classes.zonerama_album import ZoneramaAlbum
 
-from zonerama_api.typing import UserIdentifier
+from zonerama_api.z_typing import UserIdentifier
 from zonerama_api.classes.zonerama_user import ZoneramaUser
 from zonerama_api.api import get_user_public_folders
 from zonerama_api.classes.zonerama_folder import ZoneramaFolder
