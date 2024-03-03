@@ -33,6 +33,7 @@ ZIP_DOWNLOAD_URL = "https://zonerama.com/Zip/Download"
 ALBUM_BASE_URL = "https://zonerama.com/Link/Album"
 PROFILE_BASE_URL = "https://eu.zonerama.com/Profile"
 PHOTO_DOWNLOAD_URL = "https://zonerama.com/Download/Photo"
+ALBUM_PHOTO_LIST_URL = "https://zonerama.com/JSON/FlowLayout_PhotosInAlbum"
 
 
 def is_user_id(identificator: str) -> bool:
@@ -121,6 +122,18 @@ def get_user_public_folders(username: Username) -> list[FolderId]:
     divs = tabs_list_div.find_all(class_="item")
 
     return [div["data-tab-id"] for div in divs]
+
+
+def get_album_photos(album_id: AlbumId) -> list[PhotoId]:
+    response = requests.post(
+        ALBUM_PHOTO_LIST_URL,
+        data={"albumId": album_id, "startIndex": 0, "count": 999_999_999},
+    )
+    return [
+        PhotoId(elem["photoId"])
+        for elem in response.json()["items"]
+        if "photoId" in elem
+    ]
 
 
 def _get_zip_id(
