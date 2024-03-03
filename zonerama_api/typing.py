@@ -1,3 +1,4 @@
+PhotoId = str
 AlbumId = str
 FolderId = str
 SecretId = str
