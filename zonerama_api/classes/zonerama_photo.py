@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -5,6 +7,7 @@ if TYPE_CHECKING:
 
 from zonerama_api.z_typing import PhotoId
 from zonerama_api.api import download_photo
+
 
 class ZoneramaPhoto:
     id: PhotoId

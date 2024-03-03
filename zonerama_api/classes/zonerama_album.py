@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
-from functools import cached_property
 
 if TYPE_CHECKING:
     from zonerama_api.classes.zonerama_folder import ZoneramaFolder
+
+from functools import cached_property
 
 from zonerama_api.z_typing import AlbumId, SecretId
 from zonerama_api.api import (
