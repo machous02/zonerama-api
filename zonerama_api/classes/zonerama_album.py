@@ -39,7 +39,9 @@ class ZoneramaAlbum:
     def name(self) -> str:
         return self.get_name()
 
-    def get_size(self, include_videos: bool = True, include_raws: bool = False) -> AlbumSize:
+    def get_size(
+        self, include_videos: bool = True, include_raws: bool = False
+    ) -> AlbumSize:
         return get_album_size(self.id, include_videos, include_raws, self.secret_id)
 
     @cached_property
