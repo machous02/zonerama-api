@@ -6,6 +6,7 @@ from time import sleep
 import sys
 
 from zonerama_api.exceptions import (
+    InvalidPhotoIdException,
     InvalidZoneramaFolderIdException,
     InvalidZoneramaUsernameException,
     InvalidZipIdException,
@@ -14,6 +15,7 @@ from zonerama_api.exceptions import (
 )
 
 from zonerama_api.typing import (
+    PhotoId,
     AlbumId,
     FolderId,
     SecretId,
@@ -30,6 +32,7 @@ ZIP_SIZE_URL = "https://zonerama.com/Download/Size"
 ZIP_DOWNLOAD_URL = "https://zonerama.com/Zip/Download"
 ALBUM_BASE_URL = "https://zonerama.com/Link/Album"
 PROFILE_BASE_URL = "https://eu.zonerama.com/Profile"
+PHOTO_DOWNLOAD_URL = "https://zonerama.com/Download/Photo"
 
 
 def is_user_id(identificator: str) -> bool:
@@ -263,6 +266,24 @@ def download_album(
     _download_zip(zip_id, destination_folder, sleep_for)
 
 
+def download_photo(photo_id: PhotoId, destination_folder: str = os.getcwd()) -> None:
+    response = requests.get(f"{PHOTO_DOWNLOAD_URL}/{photo_id}")
+    response.raise_for_status()
+
+    if response.headers["content-type"] == "text/html; charset=utf-8":
+        raise InvalidPhotoIdException(photo_id)
+
+    assert response.headers["content-type"].startswith(("image", "video"))
+
+    content_disposition = response.headers["content-disposition"]
+    mtch = re.match(r'attachment; filename="?([^"]+)"?', content_disposition)
+    assert mtch is not None
+    filename = mtch.group(1)
+
+    with open(os.path.join(destination_folder, filename), "wb") as df:
+        df.write(response.content)
+
+
 class AlbumSize:
     photo_count: int
     video_included: bool
@@ -279,7 +300,10 @@ class AlbumSize:
 
 
 def get_album_size(
-    album_id: AlbumId, videos: bool = True, raws: bool = False, secret_id: SecretId | None = None
+    album_id: AlbumId,
+    videos: bool = True,
+    raws: bool = False,
+    secret_id: SecretId | None = None,
 ) -> AlbumSize:
     response = requests.post(
         ZIP_SIZE_URL,

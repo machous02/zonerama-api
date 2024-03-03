@@ -11,6 +11,10 @@ class InvalidZipIdException(ZipDownloaderException):
     message: str | None
 
 
+class InvalidPhotoIdException(ZipDownloaderException):
+    id: str
+
+
 class UnknownResponseException(ZipDownloaderException):
     response: str
 
