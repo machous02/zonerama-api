@@ -279,7 +279,7 @@ class AlbumSize:
 
 
 def get_album_size(
-    album_id: AlbumId, videos: bool = True, secret_id: SecretId | None = None
+    album_id: AlbumId, videos: bool = True, raws: bool = False, secret_id: SecretId | None = None
 ) -> AlbumSize:
     response = requests.post(
         ZIP_SIZE_URL,
@@ -290,7 +290,7 @@ def get_album_size(
             "secret": secret_id,
             "download_Album": False,
             "download_Videos": videos,
-            "download_RAWs": False,
+            "download_RAWs": raws,
         },
     )
 

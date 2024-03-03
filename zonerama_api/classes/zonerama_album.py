@@ -39,12 +39,20 @@ class ZoneramaAlbum:
     def name(self) -> str:
         return self.get_name()
 
-    def get_size(self, include_videos: bool = True) -> AlbumSize:
-        return get_album_size(self.id, include_videos, self.secret_id)
+    def get_size(self, include_videos: bool = True, include_raws: bool = False) -> AlbumSize:
+        return get_album_size(self.id, include_videos, include_raws, self.secret_id)
 
     @cached_property
     def size(self) -> AlbumSize:
         return self.get_size()
+
+    @cached_property
+    def size_without_videos(self) -> AlbumSize:
+        return self.get_size(include_videos=False)
+
+    @cached_property
+    def size_with_raws(self) -> AlbumSize:
+        return self.get_size(include_raws=True)
 
     @property
     def photo_count(self) -> int:
@@ -57,6 +65,14 @@ class ZoneramaAlbum:
     @property
     def zip_size(self) -> int:
         return self.size.zip_size
+
+    @property
+    def zip_size_without_videos(self) -> int:
+        return self.size_without_videos.zip_size
+
+    @property
+    def zip_size_with_raws(self) -> int:
+        return self.size_with_raws.zip_size
 
     def download(
         self,
