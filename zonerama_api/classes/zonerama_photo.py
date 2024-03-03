@@ -10,5 +10,9 @@ class ZoneramaPhoto:
     id: PhotoId
     album: ZoneramaAlbum
 
+    def __init__(self, id: PhotoId, album: ZoneramaAlbum) -> None:
+        self.id = id
+        self.album = album
+
     def download(self, destination_folder: str) -> None:
         download_photo(self.id, destination_folder)

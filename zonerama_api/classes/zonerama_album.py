@@ -12,7 +12,9 @@ from zonerama_api.api import (
     get_album_size,
     get_album_name,
     AlbumSize,
+    get_album_photos,
 )
+from zonerama_api.classes.zonerama_photo import ZoneramaPhoto
 
 
 class ZoneramaAlbum:
@@ -75,6 +77,13 @@ class ZoneramaAlbum:
     @property
     def zip_size_with_raws(self) -> int:
         return self.size_with_raws.zip_size
+
+    def get_photos(self) -> list[ZoneramaPhoto]:
+        return [ZoneramaPhoto(photo_id, self) for photo_id in get_album_photos(self.id)]
+
+    @cached_property
+    def photos(self) -> list[ZoneramaPhoto]:
+        return self.get_photos()
 
     def download(
         self,
