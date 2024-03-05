@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from zonerama_api.classes.zonerama_gallery import ZoneramaGallery
 
 from zonerama_api.z_typing import FolderId, SecretId
-from zonerama_api.api import get_user_folder_albums
+from zonerama_api.api import get_user_folder_albums, get_folder_name
 from zonerama_api.classes.zonerama_album import ZoneramaAlbum
 
 
@@ -26,6 +26,13 @@ class ZoneramaFolder:
         self.gallery = gallery
         self.id = id
         self.secret_id = secret_id
+
+    def get_name(self) -> str:
+        return get_folder_name(self.gallery.user.username, self.id)
+
+    @property
+    def name(self) -> str:
+        return self.get_name()        
 
     def get_albums(self) -> list[ZoneramaAlbum]:
         """Returns a list of albums in the folder. \

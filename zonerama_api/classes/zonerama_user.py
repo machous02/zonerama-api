@@ -11,7 +11,7 @@ class ZoneramaUser:
     def __init__(self, identificator: UserIdentifier) -> None:
         if is_user_id(identificator):
             self.user_id = identificator
-            self.user_name = get_username(identificator)
+            self.username = get_username(identificator)
             return
 
         self.username = identificator
