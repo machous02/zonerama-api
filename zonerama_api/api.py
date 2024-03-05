@@ -373,6 +373,25 @@ def get_album_name(album_id: AlbumId) -> str:
     return album_name
 
 
+def get_folder_name(username: Username, folder_id: FolderId) -> str:
+    response = requests.get(f"{ZONERAMA_URL}/{username}")
+    response.raise_for_status()
+
+    soup = BeautifulSoup(response.text, "lxml")
+    tabs_list_div = soup.find(class_="profile-tabs-list")
+
+    if tabs_list_div is None:
+        raise InvalidZoneramaUsernameException(username)
+    assert isinstance(tabs_list_div, Tag)
+
+    div = tabs_list_div.find('div', attrs={'data-tab-id': folder_id})
+    assert isinstance(div, Tag)
+    name = div.find('span', class_='name')
+    assert isinstance(name, Tag)
+    
+    return name.text
+
+
 @dataclass
 class PhotoInfo:
     name: str
