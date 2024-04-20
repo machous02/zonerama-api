@@ -7,8 +7,8 @@ if TYPE_CHECKING:
 
 from functools import cached_property
 
-from zonerama_api.z_typing import AlbumId, SecretId
-from zonerama_api.api import (
+from zonerama_api.typing import AlbumId, SecretId
+from zonerama_api.album import (
     download_album,
     get_album_size,
     get_album_name,
