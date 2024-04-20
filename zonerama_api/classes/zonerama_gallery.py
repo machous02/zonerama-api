@@ -27,7 +27,7 @@ class ZoneramaGallery:
             list[ZoneramaFolder]: A list of objects representing folders in the users gallery.
         """
         return [
-            ZoneramaFolder(self, id)
+            ZoneramaFolder(id, gallery=self)
             for id in get_user_public_folders(self.user.username)
         ]
 
