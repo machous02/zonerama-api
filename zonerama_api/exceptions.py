@@ -28,11 +28,21 @@ class ZoneramaApiException(ZoneramaDownloaderException):
 
 
 class InvalidZoneramaFolderIdException(ZoneramaApiException):
-    """Invalid folder id or secret id.
-    """
+    """Invalid folder id or secret id."""
+
     folder_id: str
     secret_id: str | None
 
 
 class InvalidZoneramaUsernameException(ZoneramaApiException):
     username: str
+
+
+class ZoneramaFolderLockedException(ZoneramaApiException):
+    folder_id: str
+    secret_id: str | None
+
+
+class InvalidZoneramaFolderPasswordException(ZoneramaApiException):
+    folder_id: str
+    password: str

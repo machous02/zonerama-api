@@ -7,3 +7,4 @@ UserId = str
 UserIdentifier = UserId | Username
 ZipId = str
 Url = str
+FolderPassword = str
