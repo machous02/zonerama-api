@@ -36,7 +36,7 @@ class ZoneramaAlbum:
         self.secret_id = secret_id
 
     def get_name(self) -> str:
-        return get_album_name(self.id)
+        return get_album_name(self.id, self.secret_id)
 
     @cached_property
     def name(self) -> str:
