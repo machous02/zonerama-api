@@ -16,6 +16,8 @@ bs4 = "^0.0.2"
 [tool.poetry.scripts]
 zonerama_downloader = 'zonerama_api.main:main'
 
+[tool.isort]
+profile = "black"
 
 [build-system]
 requires = ["poetry-core"]
