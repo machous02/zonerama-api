@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from zonerama_api.z_typing import Username, UserId, UserIdentifier
-from zonerama_api.api import is_user_id, get_username
+from zonerama_api.gallery import get_username, is_user_id
+from zonerama_api.typing import UserId, UserIdentifier, Username
 
 
 class ZoneramaUser:
