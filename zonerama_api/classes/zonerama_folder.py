@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from zonerama_api.classes.zonerama_gallery import ZoneramaGallery
 
 from zonerama_api.typing import FolderId, SecretId, FolderPassword
-from zonerama_api.folder import get_folder_albums, get_folder_name
+from zonerama_api.folder import get_folder_albums, FolderInfo, get_folder_info
 from zonerama_api.classes.zonerama_album import ZoneramaAlbum
 
 
@@ -17,6 +17,7 @@ class ZoneramaFolder:
     gallery: ZoneramaGallery | None
     secret_id: SecretId | None
     password: FolderPassword | None
+    info: FolderInfo | None
 
     def __init__(
         self,
@@ -25,20 +26,30 @@ class ZoneramaFolder:
         secret_id: SecretId | None = None,
         password: FolderPassword | None = None,
     ):
-        self.gallery = gallery
         self.id = id
+        self.gallery = gallery
         self.secret_id = secret_id
         self.password = password
+        if self.gallery is not None:
+            self.info = self.refresh_info()
 
-    def get_name(self) -> str:
+    def refresh_info(self) -> None:
         assert self.gallery is not None
-        return get_folder_name(self.gallery.user.username, self.id)
+        self.info = get_folder_info(self.gallery.user.username, self.id)
 
     @property
     def name(self) -> str:
-        return self.get_name()
+        assert self.info is not None
+        return self.info.name
 
-    def get_albums(self) -> list[ZoneramaAlbum]:
+    @property
+    def albums(self) -> list[ZoneramaAlbum]:
+        """A list of albums in the folder sorted as they would appear \
+            from top left to bottom right on the web.
+        """
+        return self._get_albums()
+
+    def _get_albums(self) -> list[ZoneramaAlbum]:
         """Returns a list of albums in the folder. \
             The list is sorted as it would appear \
             from top left to bottom right on the web.
@@ -51,10 +62,3 @@ class ZoneramaFolder:
             ZoneramaAlbum(id, self, self.secret_id)
             for id in get_folder_albums(self.id, self.secret_id, self.password)
         ]
-
-    @property
-    def albums(self) -> list[ZoneramaAlbum]:
-        """A list of albums in the folder sorted as they would appear \
-            from top left to bottom right on the web.
-        """
-        return self.get_albums()

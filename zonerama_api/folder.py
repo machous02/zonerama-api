@@ -1,4 +1,5 @@
 import re
+from dataclasses import dataclass
 
 import requests
 from bs4 import BeautifulSoup, Tag
@@ -15,6 +16,30 @@ from zonerama_api.typing import AlbumId, FolderId, FolderPassword, SecretId, Use
 ZONERAMA_URL = "https://eu.zonerama.com"
 FOLDER_ALBUMS_URL = "https://eu.zonerama.com/Part/AlbumsInTab"
 FOLDER_UNLOCK_URL = "https://eu.zonerama.com/Web/UnlockTab"
+
+
+@dataclass
+class FolderInfo:
+    name: str
+
+
+def get_folder_info(username: Username, folder_id: FolderId) -> FolderInfo:
+    response = requests.get(f"{ZONERAMA_URL}/{username}")
+    response.raise_for_status()
+
+    soup = BeautifulSoup(response.text, "lxml")
+    tabs_list_div = soup.find(class_="profile-tabs-list")
+
+    if tabs_list_div is None:
+        raise InvalidZoneramaUsernameException(username)
+    assert isinstance(tabs_list_div, Tag)
+
+    div = tabs_list_div.find("div", attrs={"data-tab-id": folder_id})
+    assert isinstance(div, Tag)
+    name = div.find("span", class_="name")
+    assert isinstance(name, Tag)
+
+    return FolderInfo(name=name.text)
 
 
 def folder_exists(
@@ -120,22 +145,3 @@ def get_folder_albums(
 
     mtchs = re.findall(r'data-album-id=\\"([^\\]+)\\"', str(script))
     return mtchs
-
-
-def get_folder_name(username: Username, folder_id: FolderId) -> str:
-    response = requests.get(f"{ZONERAMA_URL}/{username}")
-    response.raise_for_status()
-
-    soup = BeautifulSoup(response.text, "lxml")
-    tabs_list_div = soup.find(class_="profile-tabs-list")
-
-    if tabs_list_div is None:
-        raise InvalidZoneramaUsernameException(username)
-    assert isinstance(tabs_list_div, Tag)
-
-    div = tabs_list_div.find("div", attrs={"data-tab-id": folder_id})
-    assert isinstance(div, Tag)
-    name = div.find("span", class_="name")
-    assert isinstance(name, Tag)
-
-    return name.text
