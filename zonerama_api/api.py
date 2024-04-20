@@ -460,19 +460,40 @@ def get_album_size(
     )
 
 
-def get_album_name(album_id: AlbumId, secret_id: SecretId | None = None) -> str:
+def get_album_meta(
+    album_id: AlbumId, secret_id: SecretId | None = None
+) -> dict[str, str]:
     response = requests.get(
-        f"{ALBUM_BASE_URL}/{album_id}", params={"secret": secret_id}
+        f"{ALBUM_BASE_URL}/{album_id}",
+        params={"secret": secret_id},
+        allow_redirects=False,
     )
     response.raise_for_status()
 
-    soup = BeautifulSoup(response.text, features="lxml")
-    title = soup.find("meta", property="og:title")
-    assert isinstance(title, Tag)
+    if response.status_code == 302:
+        raise SecretIdNotSpecifiedException()
 
-    album_name = title["content"]
-    assert isinstance(album_name, str)
-    return album_name
+    soup = BeautifulSoup(response.text, features="lxml")
+    meta = soup.find_all("meta")
+
+    assert all(map(lambda x: isinstance(x, Tag), meta))
+
+    result: dict[str, str] = {}
+    for tag in meta:
+        key, value = tag["property"], tag["content"]
+        assert isinstance(key, str) and isinstance(value, str)
+
+        result[key] = value
+
+    return result
+
+
+def get_album_name(album_id: AlbumId, secret_id: SecretId | None = None) -> str:
+    return get_album_meta(album_id, secret_id)["og:title"]
+
+
+def is_album_downloadable(album_id: AlbumId, secret_id: SecretId | None = None) -> bool:
+    return get_album_meta(album_id, secret_id)["znrm:downloadable"] == "true"
 
 
 def get_folder_name(username: Username, folder_id: FolderId) -> str:
