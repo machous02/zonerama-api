@@ -5,23 +5,23 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from zonerama_api.classes.zonerama_gallery import ZoneramaGallery
 
-from zonerama_api.z_typing import FolderId, SecretId, FolderPassword
-from zonerama_api.api import get_folder_albums, get_folder_name
+from zonerama_api.typing import FolderId, SecretId, FolderPassword
+from zonerama_api.folder import get_folder_albums, get_folder_name
 from zonerama_api.classes.zonerama_album import ZoneramaAlbum
 
 
 class ZoneramaFolder:
     """A class representing a folder (a tab) in a user's Zonerama Web Gallery."""
 
-    gallery: ZoneramaGallery
     id: FolderId
+    gallery: ZoneramaGallery | None
     secret_id: SecretId | None
     password: FolderPassword | None
 
     def __init__(
         self,
-        gallery: ZoneramaGallery,
         id: FolderId,
+        gallery: ZoneramaGallery | None = None,
         secret_id: SecretId | None = None,
         password: FolderPassword | None = None,
     ):
@@ -31,6 +31,7 @@ class ZoneramaFolder:
         self.password = password
 
     def get_name(self) -> str:
+        assert self.gallery is not None
         return get_folder_name(self.gallery.user.username, self.id)
 
     @property
