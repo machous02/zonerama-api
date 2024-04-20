@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 import requests
 from bs4 import BeautifulSoup, Tag
 
@@ -6,6 +8,36 @@ from zonerama_api.typing import FolderId, UserId, Username
 
 ZONERAMA_URL = "https://eu.zonerama.com"
 PROFILE_BASE_URL = "https://eu.zonerama.com/Profile"
+
+
+@dataclass
+class GalleryInfo:
+    name: str
+    description: str
+
+
+def get_gallery_info(username: Username) -> GalleryInfo:
+    response = requests.get(
+        f"{ZONERAMA_URL}/{username}",
+        allow_redirects=False,
+    )
+    response.raise_for_status()
+
+    soup = BeautifulSoup(response.text, features="lxml")
+    meta = soup.find_all("meta")
+
+    assert all(map(lambda x: isinstance(x, Tag), meta))
+
+    meta_dict: dict[str, str] = {}
+    for tag in meta:
+        key, value = tag["property"], tag["content"]
+        assert isinstance(key, str) and isinstance(value, str)
+
+        meta_dict[key] = value
+
+    return GalleryInfo(
+        name=meta_dict["og:title"], description=meta_dict["og:description"]
+    )
 
 
 def get_user_public_folders(username: Username) -> list[FolderId]:
