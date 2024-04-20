@@ -22,6 +22,118 @@ ZIP_SIZE_URL = "https://zonerama.com/Download/Size"
 ALBUM_BASE_URL = "https://zonerama.com/Link/Album"
 
 
+@dataclass
+class AlbumSize:
+    photo_count: int
+    video_included: bool
+    video_count: int
+    zip_size: int  # in bytes
+
+
+@dataclass
+class AlbumInfo:
+    name: str
+    downloadable: bool
+    size: AlbumSize
+
+
+def get_album_info(album_id: AlbumId, secret_id: SecretId | None = None) -> AlbumInfo:
+    return AlbumInfo(
+        name=get_album_name(album_id, secret_id),
+        downloadable=is_album_downloadable(album_id, secret_id),
+        size=get_album_size(album_id, True, True, secret_id),
+    )
+
+
+def get_album_size(
+    album_id: AlbumId,
+    videos: bool = True,
+    raws: bool = False,
+    secret_id: SecretId | None = None,
+) -> AlbumSize:
+    response = requests.post(
+        ZIP_SIZE_URL,
+        data={
+            "albumId": album_id,
+            "photoId": "",
+            "filter": "",
+            "secret": secret_id,
+            "download_Album": False,
+            "download_Videos": videos,
+            "download_RAWs": raws,
+        },
+    )
+
+    if response.headers["content-type"] != "application/json; charset=utf-8":
+        raise SecretIdNotSpecifiedException()
+
+    txt = response.json()["text"]
+    mtch = re.match(
+        r"Předpokládaná velikost archivu (?P<photo_count>\d+) fotek"
+        r"(?: a (?P<video_count>\d+) videí)?"
+        r" je (?P<size_whole>\d+),(?P<size_dec>\d+) (?P<unit>[kMG]B).",
+        txt,
+    )
+    assert mtch is not None
+
+    video_count = "0" if mtch["video_count"] is None else mtch["video_count"]
+    size_num = float(f"{mtch['size_whole']}.{mtch['size_dec']}")
+
+    def into_bytes(num: float, unit: str) -> int:
+        match unit:
+            case "kB":
+                return int(num * 1_024)
+            case "MB":
+                return int(num * (1_024**2))
+            case "GB":
+                return int(num * (1_024**3))
+            case _:
+                assert False
+
+    return AlbumSize(
+        int(mtch["photo_count"]),
+        videos,
+        int(video_count),
+        into_bytes(size_num, mtch["unit"]),
+    )
+
+
+def get_album_meta(
+    album_id: AlbumId, secret_id: SecretId | None = None
+) -> dict[str, str]:
+    response = requests.get(
+        f"{ALBUM_BASE_URL}/{album_id}",
+        params={"secret": secret_id},
+        allow_redirects=False,
+    )
+    response.raise_for_status()
+
+    if response.status_code == 302:
+        raise SecretIdNotSpecifiedException()
+
+    soup = BeautifulSoup(response.text, features="lxml")
+    meta = soup.find_all("meta")
+
+    assert all(map(lambda x: isinstance(x, Tag), meta))
+
+    result: dict[str, str] = {}
+    for tag in meta:
+        key, value = tag["property"], tag["content"]
+        assert isinstance(key, str) and isinstance(value, str)
+
+        result[key] = value
+
+    return result
+
+
+def get_album_name(album_id: AlbumId, secret_id: SecretId | None = None) -> str:
+    return get_album_meta(album_id, secret_id)["og:title"]
+
+
+def is_album_downloadable(album_id: AlbumId, secret_id: SecretId | None = None) -> bool:
+    return get_album_meta(album_id, secret_id)["znrm:downloadable"] == "true"
+
+
 def get_album_photos(album_id: AlbumId) -> list[PhotoId]:
     response = requests.post(
         ALBUM_PHOTO_LIST_URL,
@@ -175,100 +287,3 @@ def download_album(
         sleep(sleep_for)
 
     _download_zip(zip_id, destination_folder, sleep_for)
-
-
-@dataclass
-class AlbumSize:
-    photo_count: int
-    video_included: bool
-    video_count: int
-    zip_size: int  # in bytes
-
-
-def get_album_size(
-    album_id: AlbumId,
-    videos: bool = True,
-    raws: bool = False,
-    secret_id: SecretId | None = None,
-) -> AlbumSize:
-    response = requests.post(
-        ZIP_SIZE_URL,
-        data={
-            "albumId": album_id,
-            "photoId": "",
-            "filter": "",
-            "secret": secret_id,
-            "download_Album": False,
-            "download_Videos": videos,
-            "download_RAWs": raws,
-        },
-    )
-
-    if response.headers["content-type"] != "application/json; charset=utf-8":
-        raise SecretIdNotSpecifiedException()
-
-    txt = response.json()["text"]
-    mtch = re.match(
-        r"Předpokládaná velikost archivu (?P<photo_count>\d+) fotek"
-        r"(?: a (?P<video_count>\d+) videí)?"
-        r" je (?P<size_whole>\d+),(?P<size_dec>\d+) (?P<unit>[kMG]B).",
-        txt,
-    )
-    assert mtch is not None
-
-    video_count = "0" if mtch["video_count"] is None else mtch["video_count"]
-    size_num = float(f"{mtch['size_whole']}.{mtch['size_dec']}")
-
-    def into_bytes(num: float, unit: str) -> int:
-        match unit:
-            case "kB":
-                return int(num * 1_024)
-            case "MB":
-                return int(num * (1_024**2))
-            case "GB":
-                return int(num * (1_024**3))
-            case _:
-                assert False
-
-    return AlbumSize(
-        int(mtch["photo_count"]),
-        videos,
-        int(video_count),
-        into_bytes(size_num, mtch["unit"]),
-    )
-
-
-def get_album_meta(
-    album_id: AlbumId, secret_id: SecretId | None = None
-) -> dict[str, str]:
-    response = requests.get(
-        f"{ALBUM_BASE_URL}/{album_id}",
-        params={"secret": secret_id},
-        allow_redirects=False,
-    )
-    response.raise_for_status()
-
-    if response.status_code == 302:
-        raise SecretIdNotSpecifiedException()
-
-    soup = BeautifulSoup(response.text, features="lxml")
-    meta = soup.find_all("meta")
-
-    assert all(map(lambda x: isinstance(x, Tag), meta))
-
-    result: dict[str, str] = {}
-    for tag in meta:
-        key, value = tag["property"], tag["content"]
-        assert isinstance(key, str) and isinstance(value, str)
-
-        result[key] = value
-
-    return result
-
-
-def get_album_name(album_id: AlbumId, secret_id: SecretId | None = None) -> str:
-    return get_album_meta(album_id, secret_id)["og:title"]
-
-
-def is_album_downloadable(album_id: AlbumId, secret_id: SecretId | None = None) -> bool:
-    return get_album_meta(album_id, secret_id)["znrm:downloadable"] == "true"

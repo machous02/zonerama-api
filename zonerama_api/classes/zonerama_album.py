@@ -7,23 +7,23 @@ if TYPE_CHECKING:
 
 from functools import cached_property
 
-from zonerama_api.typing import AlbumId, SecretId
 from zonerama_api.album import (
+    AlbumInfo,
     download_album,
-    get_album_size,
-    get_album_name,
-    AlbumSize,
+    get_album_info,
     get_album_photos,
 )
 from zonerama_api.classes.zonerama_photo import ZoneramaPhoto
+from zonerama_api.typing import AlbumId, SecretId
 
 
 class ZoneramaAlbum:
     """A class representing an album in the Zonerama Web Gallery."""
 
-    folder: ZoneramaFolder | None
     id: AlbumId
+    folder: ZoneramaFolder | None
     secret_id: SecretId | None
+    info: AlbumInfo
 
     def __init__(
         self,
@@ -34,57 +34,33 @@ class ZoneramaAlbum:
         self.id = id
         self.folder = folder
         self.secret_id = secret_id
+        self.refresh_info()
 
-    def get_name(self) -> str:
-        return get_album_name(self.id, self.secret_id)
+    def refresh_info(self) -> None:
+        self.info = get_album_info(self.id, self.secret_id)
 
-    @cached_property
+    @property
     def name(self) -> str:
-        return self.get_name()
-
-    def get_size(
-        self, include_videos: bool = True, include_raws: bool = False
-    ) -> AlbumSize:
-        return get_album_size(self.id, include_videos, include_raws, self.secret_id)
-
-    @cached_property
-    def size(self) -> AlbumSize:
-        return self.get_size()
-
-    @cached_property
-    def size_without_videos(self) -> AlbumSize:
-        return self.get_size(include_videos=False)
-
-    @cached_property
-    def size_with_raws(self) -> AlbumSize:
-        return self.get_size(include_raws=True)
+        return self.info.name
 
     @property
     def photo_count(self) -> int:
-        return self.size.photo_count
+        return self.info.size.photo_count
 
     @property
     def video_count(self) -> int:
-        return self.size.video_count
+        return self.info.size.video_count
 
     @property
     def zip_size(self) -> int:
-        return self.size.zip_size
-
-    @property
-    def zip_size_without_videos(self) -> int:
-        return self.size_without_videos.zip_size
-
-    @property
-    def zip_size_with_raws(self) -> int:
-        return self.size_with_raws.zip_size
-
-    def get_photos(self) -> list[ZoneramaPhoto]:
-        return [ZoneramaPhoto(photo_id, self) for photo_id in get_album_photos(self.id)]
+        return self.info.size.zip_size
 
     @cached_property
     def photos(self) -> list[ZoneramaPhoto]:
-        return self.get_photos()
+        return self._get_photos()
+
+    def _get_photos(self) -> list[ZoneramaPhoto]:
+        return [ZoneramaPhoto(photo_id, self) for photo_id in get_album_photos(self.id)]
 
     def download(
         self,
