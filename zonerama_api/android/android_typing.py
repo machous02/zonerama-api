@@ -1,11 +1,11 @@
 from datetime import datetime
+from typing import Any, TypeAlias
 
-
-def map_attributes(mapping):
-    def decorator(cls):
+def map_attributes(mapping: dict[str, str]):
+    def decorator(cls: Any):
         original_init = cls.__init__
 
-        def init_wrapper(self, obj, *args, **kwargs):
+        def init_wrapper(self: Any, obj: Any, *args: tuple[Any], **kwargs: dict[str, Any]):
             for class_attr, obj_key in mapping.items():
                 setattr(self, class_attr, getattr(obj, obj_key))
             original_init(self, *args, **kwargs)
@@ -31,7 +31,7 @@ class ApiResponse:
     result: object
 
 
-AccountID = int
+AccountID: TypeAlias = int
 
 
 @map_attributes(
@@ -87,7 +87,7 @@ class AccountInfo:
     likes: int
 
 
-TabID = int
+TabID: TypeAlias = int
 
 
 @map_attributes(
