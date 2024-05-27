@@ -12,6 +12,7 @@ from zonerama_api.android.android_typing import (
     AccountInfo,
     ApiResponse,
     TabInfo,
+    TabID,
 )
 
 WSDL_API = "http://zonerama.com/services/android/apiservice.asmx?WSDL"
@@ -106,6 +107,26 @@ class Client:
         response.raise_for_code()
 
         return AccountInfo(response.result)
+
+    def get_tab(self, id: TabID) -> TabInfo:
+        """Get a tab of the given ID.
+
+        Args:
+            id (TabID): The ID of the tab
+
+        Raises:
+            zaexc.ZoneramaAndroidNotLoggedInException: Not logged in
+            zaexc.ZoneramaAndroidUnknownTabID: Unknown tab id
+            zaexc.ZoneramaAndroidAccessDenied: Access denied
+
+        Returns:
+            TabInfo: A TabInfo object for the specified tab
+        """
+        response = ApiResponse(self._client_data.service.GetTab(id))
+        
+        response.raise_for_code()
+
+        return TabInfo(response.result)
 
     def get_tabs(self, id: AccountID) -> list[TabInfo]:
         """Get tabs of the account with the given ID. \

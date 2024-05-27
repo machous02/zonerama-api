@@ -18,5 +18,9 @@ class ZoneramaAndroidUnknownAccountID(ZoneramaAndroidException):
     pass
 
 
+class ZoneramaAndroidUnknownTabID(ZoneramaAndroidException):
+    pass
+
+
 class ZoneramaAndroidAccessDenied(ZoneramaAndroidException):
     pass

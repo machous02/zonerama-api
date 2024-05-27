@@ -58,6 +58,14 @@ class ApiResponse:
                 raise zaexc.ZoneramaAndroidUnknownAccountID(
                     self.code, self.message
                 )
+            case "E_ZONERAMA_ACCESSDENIED":
+                raise zaexc.ZoneramaAndroidAccessDenied(
+                    self.code, self.message
+                )
+            case "E_ZONERAMA_UNKNOWNTABID":
+                raise zaexc.ZoneramaAndroidUnknownTabID(
+                    self.code, self.message
+                )
             case _:
                 print(self.code)
                 assert False
