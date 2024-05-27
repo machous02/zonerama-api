@@ -52,24 +52,9 @@ class Client:
             )
         )
 
-        if not response.success:
-            match response.code:
-                case "E_ZONERAMA_INVALIDPARAMS":
-                    raise zaexc.ZoneramaAndroidInvalidLoginException(
-                        response.code, response.message
-                    )
-                case "E_ZONERAMA_UNKNOWNACCOUNTID":
-                    raise zaexc.ZoneramaAndroidUnknownAccountID(
-                        response.code, response.message
-                    )
-                case "E_ZONERAMA_LOGINFAILED":
-                    raise zaexc.ZoneramaAndroidWrongPasswordException(
-                        response.code, response.message
-                    )
-                case _:
-                    print(response.code)
-                    assert False
+        response.raise_for_code()
 
+        # Otherwise the cookie will not be sent
         self._session.cookies.set(
             "ASP.NET_SessionId",
             self._session.cookies["ASP.NET_SessionId"],
@@ -79,6 +64,16 @@ class Client:
 
         assert isinstance(response.result, AccountID)
         return response.result
+
+    def logout(self) -> None:
+        """Log out of the open session.
+        """
+        response = ApiResponse(
+            self._client_api.service.Logout()
+        )
+
+        response.raise_for_code()
+
 
     def get_account_info(self, id: AccountID) -> AccountInfo:
         """Get info for an account of the given ID.
@@ -95,19 +90,7 @@ class Client:
         """
         response = ApiResponse(self._client_data.service.GetAccount(id))
 
-        if not response.success:
-            match response.code:
-                case "E_ZONERAMA_NEEDLOGIN":
-                    raise zaexc.ZoneramaAndroidNotLoggedInException(
-                        response.code, response.message
-                    )
-                case "E_ZONERAMA_UNKNOWNACCOUNTID":
-                    raise zaexc.ZoneramaAndroidUnknownAccountID(
-                        response.code, response.message
-                    )
-                case _:
-                    print(response.code)
-                    assert False
+        response.raise_for_code()
 
         return AccountInfo(response.result)
 
@@ -127,19 +110,7 @@ class Client:
         """
         response = ApiResponse(self._client_data.service.GetTabs(id))
 
-        if not response.success:
-            match response.code:
-                case "E_ZONERAMA_NEEDLOGIN":
-                    raise zaexc.ZoneramaAndroidNotLoggedInException(
-                        response.code, response.message
-                    )
-                case "E_ZONERAMA_UNKNOWNACCOUNTID":
-                    raise zaexc.ZoneramaAndroidUnknownAccountID(
-                        response.code, response.message
-                    )
-                case _:
-                    print(response.code)
-                    assert False
+        response.raise_for_code()
 
         if response.result is None:
             raise zaexc.ZoneramaAndroidUnknownAccountID(response.code, response.message)

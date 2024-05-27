@@ -1,6 +1,9 @@
 from datetime import datetime
 from typing import Any, TypeAlias
 
+import zonerama_api.android.android_exceptions as zaexc
+
+
 def map_attributes(mapping: dict[str, str]):
     def decorator(cls: Any):
         original_init = cls.__init__
@@ -29,6 +32,35 @@ class ApiResponse:
     message: str | None
     code: str | None
     result: object
+
+    def raise_for_code(self) -> None:
+        if self.code is None:
+            return
+
+        match self.code:
+            case "E_ZONERAMA_INVALIDPARAMS":
+                raise zaexc.ZoneramaAndroidInvalidLoginException(
+                    self.code, self.message
+                )
+            case "E_ZONERAMA_UNKNOWNACCOUNTID":
+                raise zaexc.ZoneramaAndroidUnknownAccountID(
+                    self.code, self.message
+                )
+            case "E_ZONERAMA_LOGINFAILED":
+                raise zaexc.ZoneramaAndroidWrongPasswordException(
+                    self.code, self.message
+                )
+            case "E_ZONERAMA_NEEDLOGIN":
+                raise zaexc.ZoneramaAndroidNotLoggedInException(
+                    self.code, self.message
+                )
+            case "E_ZONERAMA_UNKNOWNACCOUNTID":
+                raise zaexc.ZoneramaAndroidUnknownAccountID(
+                    self.code, self.message
+                )
+            case _:
+                print(self.code)
+                assert False
 
 
 AccountID: TypeAlias = int
