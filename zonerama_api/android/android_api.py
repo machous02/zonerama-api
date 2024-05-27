@@ -13,6 +13,8 @@ from zonerama_api.android.android_typing import (
     ApiResponse,
     TabInfo,
     TabID,
+    AlbumInfo,
+    AlbumID,
 )
 
 WSDL_API = "http://zonerama.com/services/android/apiservice.asmx?WSDL"
@@ -123,7 +125,7 @@ class Client:
             TabInfo: A TabInfo object for the specified tab
         """
         response = ApiResponse(self._client_data.service.GetTab(id))
-        
+
         response.raise_for_code()
 
         return TabInfo(response.result)
@@ -150,3 +152,65 @@ class Client:
             raise zaexc.ZoneramaAndroidUnknownAccountID(response.code, response.message)
 
         return [TabInfo(tab) for tab in response.result.Tab]
+
+    def get_album(self, id: AlbumID) -> AlbumInfo:
+        """Get an album of the given ID.
+
+        Args:
+            id (AlbumID): The ID of the album
+
+        Raises:
+             zaexc.ZoneramaAndroidNotLoggedInException: Not logged in
+             zaexc.ZoneramaAndroidUnknownAlbumID: Unknown album id
+             zaexc.ZoneramaAndroidAccessDenied: Access denied
+
+        Returns:
+            AlbumInfo: An AlbumInfo object for the specified album
+        """
+        response = ApiResponse(self._client_data.service.GetAlbum(id))
+
+        response.raise_for_code()
+
+        return AlbumInfo(response.result)
+
+    def get_albums_in_account(self, id: AccountID) -> list[AlbumInfo]:
+        """Get albums of the account with the given ID. \
+            Private albums will be listed only when id is of the account logged in.
+
+        Args:
+            id (AccountID): The ID of the account
+
+        Raises:
+             zaexc.ZoneramaAndroidNotLoggedInException: Not logged in
+             zaexc.ZoneramaAndroidUnknownAccountID: Unknown account id
+
+        Returns:
+            list[AlbumInfo]: A list of AlbumInfo object for each album.
+        """
+        response = ApiResponse(self._client_data.service.GetAlbums(id))
+
+        response.raise_for_code()
+
+        return [AlbumInfo(album) for album in response.result.Album]
+
+    def get_albums_in_tab(self, id: TabID) -> list[AlbumInfo]:
+        """Get albums in the tab with the given ID.
+        Args:
+            id (TabID): The ID of the tab
+
+        Raises:
+             zaexc.ZoneramaAndroidNotLoggedInException: Not logged in
+             zaexc.ZoneramaAndroidUnknownTabID: Unknown account id
+             zaexc.ZoneramaAndroidAccessDenied: Access denied
+
+        Returns:
+            list[AlbumInfo]: A list of AlbumInfo object for each album.
+        """
+        response = ApiResponse(self._client_data.service.GetAlbumsInTab(id))
+
+        response.raise_for_code()
+
+        if response.result is None:
+            return []
+
+        return [AlbumInfo(album) for album in response.result.Album]
