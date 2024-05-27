@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from hashlib import sha256
 
 import zeep
@@ -24,31 +26,37 @@ class Client:
     _transport: Transport
     _client_api: zeep.Client
     _client_data: zeep.Client
+    email: str
+    password: str
+    logged_in: bool = False
+    logged_in_as: AccountID | None = None
 
-    def __init__(self) -> None:
+    def __init__(self, email: str, password: str) -> None:
         self._session = Session()
         self._transport = Transport(session=self._session)
         self._client_api = zeep.Client(wsdl=WSDL_API, transport=self._transport)
         self._client_data = zeep.Client(wsdl=WSDL_DATA, transport=self._transport)
+        self.email = email
+        self.password = password
 
-    def login(self, email: str, password: str) -> AccountID:
-        """Login to Zonerama with an email and a password.
+    def __enter__(self) -> Client:
+        self.login()
+        return self
 
-        Args:
-            email (str): email
-            password (str): password (will be hashed)
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
+        self.logout()
+
+    def login(self) -> None:
+        """Login to Zonerama with the stored email and a password.
 
         Raises:
             zaexc.ZoneramaAndroidInvalidLoginException: Invalid email
             zaexc.ZoneramaAndroidUnknownAccountID: Unknown email
             zaexc.ZoneramaAndroidWrongPasswordException: Wrong password
-
-        Returns:
-            AccountID: The ID of the logged in account
         """
         response = ApiResponse(
             self._client_api.service.Login(
-                email, sha256(bytes(password, "utf-8")).hexdigest()
+                self.email, sha256(bytes(self.password, "utf-8")).hexdigest()
             )
         )
 
@@ -63,17 +71,22 @@ class Client:
         )
 
         assert isinstance(response.result, AccountID)
-        return response.result
+
+        self.logged_in = True
+        self.logged_in_as = response.result
 
     def logout(self) -> None:
         """Log out of the open session.
+
+        Raises:
+            zaexc.ZoneramaAndroidNotLoggedInException: Not logged in
         """
-        response = ApiResponse(
-            self._client_api.service.Logout()
-        )
+        response = ApiResponse(self._client_api.service.Logout())
 
         response.raise_for_code()
 
+        self.logged_in = False
+        self.logged_in_as = None
 
     def get_account_info(self, id: AccountID) -> AccountInfo:
         """Get info for an account of the given ID.
